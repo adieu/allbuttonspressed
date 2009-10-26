@@ -1,15 +1,5 @@
-from ..models import FieldsWithOptionsModel
-from django.db import models
+from ..models import FieldsWithOptionsModel, OrderedModel
 from djangotoolbox.test import TestCase
-
-class FilterTest(TestCase):
-    pass
-
-class OrderedModel(models.Model):
-    priority = models.IntegerField()
-
-    class Meta:
-        ordering = ('-priority',)
 
 class OrderTest(TestCase):
     def create_ordered_model_items(self):
@@ -51,3 +41,5 @@ class OrderTest(TestCase):
         self.assertEquals([item.priority
                            for item in OrderedModel.objects.filter(pk__in=pks).order_by()],
                           priorities)
+
+    # TODO: test multiple orders
