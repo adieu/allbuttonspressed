@@ -1,4 +1,4 @@
-﻿application: ctst
+﻿application: allbuttonspressed
 version: 1
 runtime: python
 api_version: 1
@@ -9,6 +9,9 @@ handlers:
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
   login: admin
+
+- url: /media/admin
+  static_dir: common-apps/django/contrib/admin/media
 
 - url: /.*
   script: common-apps/djangoappengine/main/main.py

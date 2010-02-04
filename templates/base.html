@@ -1,0 +1,53 @@
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+    xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
+    lang="{% firstof LANGUAGE_CODE 'en' %}">
+  <head>
+    <title>{% block title %}{% endblock %} - All buttons pressed</title>
+    {% block css %}
+    {% endblock %}
+
+    {% block js %}
+    {% endblock %}
+
+    {% block extra-head %}{% endblock %}
+  </head>
+
+  <body>
+    {% block header %}
+      <div id="header">
+        <a id="logo" href="/">All buttons pressed <span id="description">Hacking the web with Django and SproutCore. Mostly on App Engine.</span></a>
+        <ul class="menu">          
+          <li>
+            <a href="/projects/">Projects</a>
+          </li>
+          <li>
+            <a href="/blog/">Blog</a>
+          </li>
+          <li>
+            <a href="/about/">About us</a>
+          </li>
+        </ul>
+      </div>
+    {% endblock %}
+    <div id="content">
+      {% block content-header %}
+        {% if error %}<div class="error">{{ error }}</div>{% endif %}
+        {% if info %}<div class="info">{{ info }}</div>{% endif %}
+        {% if messages %}
+          {% for message in messages %}
+            <div class="info">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endblock %}
+      {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer">
+      <p>Copyright {% now "Y" %} Waldemar Kornewald &amp; Thomas Wanschik</p>
+    </div>
+  </body>
+</html>
