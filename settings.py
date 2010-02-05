@@ -9,6 +9,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.contenttypes',
     'minicms',
+    'blog',
 )
 
 MIDDLEWARE_CLASSES = (
