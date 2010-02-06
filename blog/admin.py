@@ -6,8 +6,18 @@ class BlogAdmin(admin.ModelAdmin):
     search_fields = ('base_url',)
 
 class PostAdmin(admin.ModelAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'content', 'blog', 'published'),
+        }),
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': ('author', 'url', 'published_on'),
+        }),
+    )
     list_display = ('title', 'url', 'published')
     search_fields = ('url',)
+    ordering = ('-published_on',)
 
     def save_model(self, request, obj, form, change):
         if not change:

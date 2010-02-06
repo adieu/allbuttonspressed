@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block title %}Blog posts{% endblock %}
+
+{% block content %}
+{% for post in object_list %}
+  <div class="post">
+    <h1><a href="{{ post.get_absolute_url }}">{{ post.title|safe }}</a></h1>
+    {{ post.content|safe|linebreaks|truncatewords_html:100 }}
+    <a href="{{ post.get_absolute_url }}">Read more...</a>
+  </div>
+{% endfor %}
+
+<div class="pagenav">
+  {% if has_previous %}
+    <a href="{{ request.path }}?page={{ next }}">&lt;-older</a>
+  {% endif %}
+  {% if has_previous %}
+    <a href="{{ request.path }}{% if previous %}?page={{ previous }}{% endif %}">newer->&gt;</a>
+  {% endif %}
+</div>
+{% endblock %}
