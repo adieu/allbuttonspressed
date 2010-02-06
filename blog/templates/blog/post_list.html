@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
-{% block title %}Blog posts{% endblock %}
+{% block title %}{{ blog.title }}{% endblock %}
 
 {% block content %}
 {% for post in object_list %}
   <div class="post">
-    <h1><a href="{{ post.get_absolute_url }}">{{ post.title|safe }}</a></h1>
-    {{ post.content|safe|linebreaks|truncatewords_html:100 }}
+    <h1><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h1>
+    {{ post.rendered_content|truncatewords_html:100 }}
     <a href="{{ post.get_absolute_url }}">Read more...</a>
   </div>
 {% endfor %}

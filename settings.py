@@ -1,5 +1,8 @@
 from djangoappengine.settings_base import *
 
+SITE_NAME = 'All buttons pressed'
+SITE_DESCRIPTION = 'Hacking the cloud with Django and SproutCore. Mostly on App Engine.'
+
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 
 INSTALLED_APPS = (
@@ -15,6 +18,7 @@ INSTALLED_APPS = (
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'minicms.middleware.CMSFallbackMiddleware',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

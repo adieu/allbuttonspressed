@@ -5,6 +5,12 @@ class Page(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField(blank=True)
 
+    @property
+    def rendered_content(self):
+        from django.template.defaultfilters import linebreaks
+        from django.utils.safestring import mark_safe
+        return linebreaks(mark_safe(self.content))
+
     def __unicode__(self):
         return u"%s -- %s" % (self.url, self.title)
 
