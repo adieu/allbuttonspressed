@@ -1,9 +1,7 @@
 from .models import Page
 from django.shortcuts import get_object_or_404
-from django.views.generic.simple import direct_to_template
 from django.utils.safestring import mark_safe
-
-DEFAULT_TEMPLATE = 'minicms/default.html'
+from django.views.generic.simple import direct_to_template
 
 def show(request, url):
     page = get_object_or_404(Page, url='/'+url)
@@ -14,5 +12,5 @@ def show(request, url):
     page.title = mark_safe(page.title)
     page.content = mark_safe(page.content)
 
-    return direct_to_template(request, DEFAULT_TEMPLATE,
+    return direct_to_template(request, 'minicms/page_detail.html',
         extra_context={'page': page})

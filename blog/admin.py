@@ -6,7 +6,7 @@ class BlogAdmin(admin.ModelAdmin):
     search_fields = ('base_url',)
 
 class PostAdmin(admin.ModelAdmin):
-    list_display = ('url', 'title')
+    list_display = ('title', 'url', 'published')
     search_fields = ('url',)
 
     def save_model(self, request, obj, form, change):

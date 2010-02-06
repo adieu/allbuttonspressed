@@ -19,7 +19,9 @@ MIDDLEWARE_CLASSES = (
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.auth',
+    'django.core.context_processors.request',
     'django.core.context_processors.media',
+    'minicms.context_processors.cms',
 )
 
 USE_I18N = False

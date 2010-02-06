@@ -1,12 +1,7 @@
+from .utils import slugify
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
-import re
-
-_NORMALIZE = re.compile(r'\W+', re.UNICODE)
-
-def slugify(text):
-    return _NORMALIZE.sub('-', text).strip('-')
 
 class Blog(models.Model):
     base_url = models.CharField('Base URL', primary_key=True, max_length=200)
@@ -15,17 +10,24 @@ class Blog(models.Model):
     def __unicode__(self):
         return self.title
 
+def default_blog():
+    try:
+        return Blog.objects.get()
+    except Blog.DoesNotExist:
+        return None
+
 class Post(models.Model):
-    url = models.CharField('URL', primary_key=True, blank=True, max_length=200,
-        help_text='Optional (filled automatically)')
+    url = models.CharField('URL', blank=True, max_length=200,
+        help_text='Optional (filled automatically when publishing)')
     author = models.ForeignKey(User, related_name='posts', null=True, blank=True,
         help_text='Optional (filled automatically)')
     blog = models.ForeignKey(Blog, related_name='posts',
-        default=lambda: Blog.objects.all()[0])
+        default=default_blog)
     title = models.CharField(max_length=200)
-    content = models.TextField()
+    content = models.TextField(blank=True)
     published = models.BooleanField(default=False)
-    created_on = models.DateTimeField(auto_now_add=True)
+    published_on = models.DateTimeField(null=True, blank=True,
+        help_text='Optional (filled automatically when publishing)')
     last_update = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
@@ -35,8 +37,10 @@ class Post(models.Model):
         return self.url
 
     def save(self, *args, **kwargs):
-        if not self.url:
+        if self.published and not self.published_on:
+            self.published_on = datetime.now()
+        if self.published and not self.url:
             self.url = '%s/%s-%s' % (self.blog.base_url,
-                                     datetime.now().strftime('%Y-%M-%d'),
+                                     self.published_on.strftime('%Y-%m-%d'),
                                      slugify(self.title))
         super(Post, self).save(*args, **kwargs)

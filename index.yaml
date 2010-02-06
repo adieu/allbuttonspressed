@@ -20,6 +20,13 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: blog_post
+  properties:
+  - name: blog_id
+  - name: published
+  - name: published_on
+    direction: desc
+
 - kind: django_admin_log
   properties:
   - name: user_id
@@ -30,6 +37,11 @@ indexes:
   properties:
   - name: app_label
   - name: name
+
+- kind: minicms_config
+  properties:
+  - name: __key__
+    direction: desc
 
 - kind: minicms_page
   properties:

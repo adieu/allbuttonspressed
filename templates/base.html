@@ -17,22 +17,12 @@
   </head>
 
   <body>
-    {% block header %}
-      <div id="header">
-        <a id="logo" href="/">All buttons pressed <span id="description">Hacking the web with Django and SproutCore. Mostly on App Engine.</span></a>
-        <ul class="menu">          
-          <li>
-            <a href="/projects/">Projects</a>
-          </li>
-          <li>
-            <a href="/blog/">Blog</a>
-          </li>
-          <li>
-            <a href="/about/">About us</a>
-          </li>
-        </ul>
-      </div>
-    {% endblock %}
+    <div id="header">
+      <a id="logo" href="/">All buttons pressed <span id="description">Hacking the web with Django and SproutCore. Mostly on App Engine.</span></a>
+      <ul class="menu">
+        {% include 'minicms/menu.html' %}
+      </ul>
+    </div>
     <div id="content">
       {% block content-header %}
         {% if error %}<div class="error">{{ error }}</div>{% endif %}

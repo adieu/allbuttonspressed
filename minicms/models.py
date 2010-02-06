@@ -10,3 +10,10 @@ class Page(models.Model):
 
     def get_absolute_url(self):
         return self.url
+
+class Config(models.Model):
+    name = models.CharField(primary_key=True, max_length=200)
+    content = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.name
