@@ -3,22 +3,32 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import permalink
+import re
+
+FEEDBURNER_ID = re.compile(r'^http://feeds.feedburner.com/([^/]+)/?$')
 
 class Blog(models.Model):
     base_url = models.CharField('Base URL', primary_key=True, max_length=200,
-        help_text='Example: With base URL "personal" your blog posts would be '
-                  'below /blog/personal/...<br />'
+        help_text='Example: With base URL "personal" your blog posts would '
+                  'be below /blog/personal/...<br />'
                   'Slashes ("/") are not allowed in this field.')
     title = models.CharField(max_length=200,
         help_text='This will also be your feed title')
     description = models.CharField(max_length=500, blank=True,
         help_text='This will also be your feed description')
-    feedburner_name = models.CharField('FeedBurner name', max_length=200, blank=True,
-        help_text='Optional (specify this if you want this blog to publish '
-                  'its feeds via FeedBurner)')
+    feed_redirect_url = models.URLField('Feed redirect URL',
+        verify_exists=False, blank=True,
+        help_text='Optional (use this to publish feeds via FeedBurner)')
 
     def __unicode__(self):
         return self.title
+
+    def feedburner_id(self):
+        # Detect FeedBurner ID from feed redirect URL
+        match = FEEDBURNER_ID.match(self.feed_redirect_url)
+        if match:
+            return match.group(1)
+        return None
 
     @permalink
     def get_feed_url(self):
@@ -37,7 +47,7 @@ class Post(models.Model):
     blog = models.ForeignKey(Blog, related_name='posts',
         default=default_blog)
     published = models.BooleanField(default=False)
-    author = models.ForeignKey(User, related_name='posts', null=True, blank=True,
+    author = models.ForeignKey(User, related_name='posts',
         help_text='Optional (filled automatically when saving)')
     url = models.CharField('URL', blank=True, max_length=200,
         help_text='Optional (filled automatically when publishing)')
@@ -49,7 +59,7 @@ class Post(models.Model):
     def rendered_content(self):
         from django.template.defaultfilters import linebreaks
         from django.utils.safestring import mark_safe
-        return linebreaks(mark_safe(self.content))
+        return linebreaks(mark_safe(self.content.strip()))
 
     def __unicode__(self):
         return self.title

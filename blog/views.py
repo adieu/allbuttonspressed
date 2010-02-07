@@ -4,10 +4,10 @@ from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
+from django.utils.feedgenerator import Atom1Feed
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
-FEEDBURNER_URL = 'http://feeds.feedburner.com/%s'
 POSTS_PER_PAGE = 5
 
 def show(request, blog_url, post_url):
@@ -26,13 +26,15 @@ def feedburner(feed):
     """Converts a feed into a FeedBurner-aware feed."""
     def _feed(request, blog_url):
         blog = get_object_or_404(Blog, base_url=blog_url)
-        if not blog.feedburner_name or \
+        if not blog.feed_redirect_url or \
                 request.META['HTTP_USER_AGENT'].startswith('FeedBurner'):
             return feed(request, blog=blog)
-        return HttpResponseRedirect(FEEDBURNER_URL % blog.feedburner_name)
+        return HttpResponseRedirect(blog.feed_redirect_url)
     return _feed
 
 class LatestEntriesFeed(Feed):
+    feed_type = Atom1Feed
+
     def get_object(self, request, blog):
         return blog
 
@@ -42,7 +44,7 @@ class LatestEntriesFeed(Feed):
     def link(self, blog):
         return blog.get_feed_url()
 
-    def description(self, blog):
+    def subtitle(self, blog):
         return blog.description
 
     def item_title(self, post):
@@ -51,7 +53,15 @@ class LatestEntriesFeed(Feed):
     def item_description(self, post):
         return post.rendered_content
 
+    def item_author_name(self, post):
+        return post.author.get_full_name()
+
+    def item_pubdate(self, post):
+        return post.published_on
+
     def items(self, blog):
-        return Post.objects.filter(blog=blog).order_by('-published_on')[:50]
+        query = Post.objects.filter(blog=blog).order_by('-published_on')
+        # TODO: add select_related('author') once it's supported
+        return query[:50]
 
 latest_entries_feed = feedburner(LatestEntriesFeed())
