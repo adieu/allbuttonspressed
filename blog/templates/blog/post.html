@@ -1,6 +1,12 @@
 <h1><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h1>
-<span class="tweetmeme-button">
+<span class="tweetmeme-button" style="float:left; margin-right: 10px;">
   <script type="text/javascript">tweetmeme_url = 'http{% if request.is_secure %}s{% endif %}://{{ request.get_host|escapejs }}{{ post.get_absolute_url|escapejs }}';</script>
   <script type="text/javascript" src="http://tweetmeme.com/i/scripts/button.js"></script>
 </span>
 {{ post.rendered_content }}
+
+{% if blog.feedburner_id %}
+<div class="feedflare">
+<script charset="utf-8" type="text/javascript" src="http://feeds.feedburner.com/~s/{{ blog.feedburner_id }}?i=http{% if request.is_secure %}s{% endif %}://{{ request.get_host|urlencode }}{{ post.get_absolute_url|urlencode }}"></script>
+</div>
+{% endif %}

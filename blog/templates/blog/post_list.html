@@ -5,7 +5,9 @@
 {% for post in object_list %}
   <div class="post post-in-list">
     {% include 'blog/post.html' %}
-    Posted by {{ post.author.get_full_name }} on {{ post.published_on|date }} | <a href="{{ post.get_absolute_url }}#disqus_thread">Comment</a>
+    <div class="post-footer">
+      Posted by {{ post.author.get_full_name }} on {{ post.published_on|date }} | <a href="{{ post.get_absolute_url }}#disqus_thread">Add comment</a>
+    </div>
   </div>
 {% endfor %}
 

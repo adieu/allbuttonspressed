@@ -7,9 +7,11 @@ class Page(models.Model):
 
     @property
     def rendered_content(self):
-        from django.template.defaultfilters import linebreaks
+        # XXX: We use linebreaksbr instead of linebreaks because the latter
+        # breaks <pre> tags with incorrectly placed </p> closing tags.
+        from django.template.defaultfilters import linebreaksbr
         from django.utils.safestring import mark_safe
-        return linebreaks(mark_safe(self.content))
+        return linebreaksbr(mark_safe(self.content.strip()))
 
     def __unicode__(self):
         return u"%s -- %s" % (self.url, self.title)

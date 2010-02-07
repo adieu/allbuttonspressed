@@ -9,10 +9,6 @@
 <div class="post-footer">
 {% block post-footer %}
 Posted by {{ post.author.get_full_name }} on {{ post.published_on|date }}
-
-{% if post.blog.feedburner_id %}
-<script charset="utf-8" type="text/javascript" src="http://feeds.feedburner.com/~s/{{ feedburner_id }}?i=http{% if request.is_secure %}s{% endif %}://{{ request.get_host|urlencode }}{{ post.get_absolute_url|urlencode }}"></script>
-{% endif %}
 {% endblock %}
 </div>
 

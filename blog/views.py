@@ -9,6 +9,7 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
 POSTS_PER_PAGE = 5
+TWEETMEME_FEED_BUTTON = '<a href="http://api.tweetmeme.com/share?url=%(url)s" style="float: left"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
 
 def show(request, blog_url, post_url):
     post = get_object_or_404(Post, url=post_url, blog=blog_url)
@@ -51,7 +52,11 @@ class LatestEntriesFeed(Feed):
         return post.title
 
     def item_description(self, post):
-        return post.rendered_content
+        url = 'http%s://%s%s' % ('s' if self._request.is_secure() else '',
+                                 self._request.get_host(),
+                                 post.get_absolute_url())
+        header = TWEETMEME_FEED_BUTTON % {'url': url}
+        return TWEETMEME_FEED_BUTTON + post.rendered_content
 
     def item_author_name(self, post):
         return post.author.get_full_name()
@@ -64,4 +69,8 @@ class LatestEntriesFeed(Feed):
         # TODO: add select_related('author') once it's supported
         return query[:50]
 
-latest_entries_feed = feedburner(LatestEntriesFeed())
+@feedburner
+def latest_entries_feed(request, *args, **kwargs):
+    feed = LatestEntriesFeed()
+    feed._request = request
+    return feed(request, *args, **kwargs)
