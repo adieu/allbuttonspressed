@@ -1,7 +1,6 @@
 from django.db import models
 
-class Page(models.Model):
-    url = models.CharField('URL', primary_key=True, max_length=200)
+class BaseContent(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField(blank=True)
 
@@ -12,6 +11,12 @@ class Page(models.Model):
         from django.template.defaultfilters import linebreaksbr
         from django.utils.safestring import mark_safe
         return linebreaksbr(mark_safe(self.content.strip()))
+
+    class Meta:
+        abstract = True
+
+class Page(BaseContent):
+    url = models.CharField('URL', primary_key=True, max_length=200)
 
     def __unicode__(self):
         return u"%s -- %s" % (self.url, self.title)

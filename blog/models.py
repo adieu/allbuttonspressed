@@ -3,6 +3,7 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import permalink
+from minicms.models import BaseContent
 import re
 
 FEEDBURNER_ID = re.compile(r'^http://feeds.feedburner.com/([^/]+)/?$')
@@ -11,14 +12,17 @@ class Blog(models.Model):
     base_url = models.CharField('Base URL', primary_key=True, max_length=200,
         help_text='Example: With base URL "personal" your blog posts would '
                   'be below /blog/personal/...<br />'
-                  'Slashes ("/") are not allowed in this field.')
+                  'Slashes ("/") are not allowed in this field.<br />'
+                  "<strong>You can't change this value afterwards.</strong>")
     title = models.CharField(max_length=200,
         help_text='This will also be your feed title')
     description = models.CharField(max_length=500, blank=True,
         help_text='This will also be your feed description')
     feed_redirect_url = models.URLField('Feed redirect URL',
         verify_exists=False, blank=True,
-        help_text='Optional (use this to publish feeds via FeedBurner)')
+        help_text='Optional (use this to publish feeds via FeedBurner)<br />'
+                  'Example: http://feeds.feedburner.com/YourFeedBurnerID<br />'
+                  'If you use FeedBurner this will also enable FeedFlares.')
 
     def __unicode__(self):
         return self.title
@@ -41,11 +45,11 @@ def default_blog():
     except Blog.DoesNotExist:
         return None
 
-class Post(models.Model):
-    title = models.CharField(max_length=200)
-    content = models.TextField(blank=True)
+class Post(BaseContent):
     blog = models.ForeignKey(Blog, related_name='posts',
-        default=default_blog)
+        default=default_blog,
+        help_text="Changing the blog will also change the post's URL, so "
+                  "better don't change it for a published post.")
     published = models.BooleanField(default=False)
     author = models.ForeignKey(User, related_name='posts',
         help_text='Optional (filled automatically when saving)')
@@ -54,14 +58,6 @@ class Post(models.Model):
     published_on = models.DateTimeField(null=True, blank=True,
         help_text='Optional (filled automatically when publishing)')
     last_update = models.DateTimeField(auto_now=True)
-
-    @property
-    def rendered_content(self):
-        # XXX: We use linebreaksbr instead of linebreaks because the latter
-        # breaks <pre> tags with incorrectly placed </p> closing tags.
-        from django.template.defaultfilters import linebreaksbr
-        from django.utils.safestring import mark_safe
-        return linebreaksbr(mark_safe(self.content.strip()))
 
     def __unicode__(self):
         return self.title
@@ -75,6 +71,6 @@ class Post(models.Model):
         if self.published and not self.published_on:
             self.published_on = datetime.now()
         if self.published and not self.url:
-            self.url = '%s-%s' % (self.published_on.strftime('%Y-%m-%d'),
+            self.url = '%s/%s' % (self.published_on.strftime('%Y/%m'),
                                   slugify(self.title))
         super(Post, self).save(*args, **kwargs)
