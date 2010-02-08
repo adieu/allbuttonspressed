@@ -23,7 +23,7 @@
     <div id="header">
       <a id="logo" href="/">{{ site_name }} <span id="description">{{ site_description }}</span></a>
       <ul class="menu">
-        {% render_menu %}
+        {% show_menu %}
       </ul>
     </div>
 
@@ -43,6 +43,7 @@
 
       <div id="sidebar">
         {% block sidebar %}
+          {% show_block 'sidebar' %}
         {% endblock %}
       </div>
     </div>

@@ -3,13 +3,20 @@ from django.template import Library
 
 register = Library()
 
+@register.simple_tag
+def show_block(name):
+    try:
+        return Config.objects.get(name=name).content
+    except Config.DoesNotExist:
+        return ''
+
 @register.inclusion_tag('minicms/menu.html', takes_context=True)
-def render_menu(context, name='menu'):
+def show_menu(context, name='menu'):
     request = context['request']
 
     menu = []
     try:
-        for line in Config.objects.get(pk=name).content.splitlines():
+        for line in Config.objects.get(name=name).content.splitlines():
             line = line.rstrip()
             try:
                 title, url = line.rsplit(' ', 1)

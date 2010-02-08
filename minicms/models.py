@@ -3,7 +3,23 @@ from django.db import models
 class BaseContent(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField(blank=True,
-        help_text='Please use reStructuredText, here. See the <a href="http://docutils.sourceforge.net/docs/user/rst/quickref.html" target="_blank">quick reference</a> for more details.')
+        help_text='Syntax examples (reStructuredText):<br /><br />'
+                  '<code><span style="font-weight: bold">**bold**</span>'
+                  '&nbsp;&nbsp;<em>*italicts*</em>&nbsp;&nbsp;'
+                  '``inline_code()``&nbsp;&nbsp;'
+                  '`long link &lt;http://url.com&gt;`_ and `short link`_<br />'
+                  '.. _short link: http://url.com'
+                  '  <em>(put this at the bottom)</em>'
+                  '<br /><br />'
+                  '* bulleted list<br />'
+                  '# numbered list<br /><br />'
+                  '.. sourcecode:: python<br /><br />'
+                  '&nbsp;&nbsp;&nbsp;def f(x):<br />'
+                  '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass</code>'
+                  '<br /><br />'
+                  'See the <a href="'
+                  'http://docutils.sourceforge.net/docs/user/rst/quickref.html'
+                  '" target="_blank">quick reference</a> for more details.')
     pre_rendered_content = models.TextField(blank=True, editable=False)
 
     @property

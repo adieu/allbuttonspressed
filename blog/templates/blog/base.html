@@ -1,1 +1,19 @@
 {% extends 'base.html' %}
+{% block sidebar %}
+{% if blog.feedburner_id %}
+<form action="http://feedburner.google.com/fb/a/mailverify" target="popupwindow" method="post" onsubmit="window.open('http://feedburner.google.com/fb/a/mailverify?uri={{ blog.feedburner_id }}', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+
+<p>
+<a href="http://feeds.feedburner.com/{{ blog.feedburner_id }}" rel="alternate" title="Subscribe to my feed" type="application/rss+xml"><img alt="" style="border:0" src="http://www.feedburner.com/fb/images/pub/feed-icon32x32.png"/></a><a href="http://feeds.feedburner.com/{{ blog.feedburner_id }}" rel="alternate" title="Subscribe to my feed" type="application/rss+xml">Subscribe in a reader</a>
+</p>
+
+<p>Or enter your email address:</p>
+<p><input style="width:140px" name="email" type="text"/></p>
+<input value="{{ blog.feedburner_id }}" name="uri" type="hidden"/>
+<input value="en_US" name="loc" type="hidden"/>
+<input value="Subscribe now!" type="submit"/>
+
+</form>
+{% endif %}
+{{ block.super }}
+{% endblock %}
