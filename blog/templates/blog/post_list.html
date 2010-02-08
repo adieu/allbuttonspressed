@@ -1,4 +1,5 @@
 {% extends 'blog/base.html' %}
+{% load disqus_tags %}
 {% block title %}{{ blog.title }}{% endblock %}
 
 {% block content %}
@@ -6,7 +7,7 @@
   <div class="post post-in-list">
     {% include 'blog/post.html' %}
     <div class="post-footer">
-      Posted by {{ post.author.get_full_name }} on {{ post.published_on|date }} | <a href="{{ post.get_absolute_url }}#disqus_thread">Add comment</a>
+      Posted by {{ post.author.get_full_name }} on {{ post.published_on|date }} | <a href="{{ post.get_absolute_url }}#disqus_thread">Comments</a>
     </div>
   </div>
 {% endfor %}
@@ -19,4 +20,6 @@
     <a href="{{ request.path }}{% if previous %}?page={{ previous }}{% endif %}">newer->&gt;</a>
   {% endif %}
 </div>
+
+{% disqus_num_replies %}
 {% endblock %}

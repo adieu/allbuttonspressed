@@ -2,18 +2,22 @@ from django.db import models
 
 class BaseContent(models.Model):
     title = models.CharField(max_length=200)
-    content = models.TextField(blank=True)
+    content = models.TextField(blank=True,
+        help_text='Please use reStructuredText, here. See the <a href="http://docutils.sourceforge.net/docs/user/rst/quickref.html" target="_blank">quick reference</a> for more details.')
+    pre_rendered_content = models.TextField(blank=True, editable=False)
 
     @property
     def rendered_content(self):
-        # XXX: We use linebreaksbr instead of linebreaks because the latter
-        # breaks <pre> tags with incorrectly placed </p> closing tags.
-        from django.template.defaultfilters import linebreaksbr
         from django.utils.safestring import mark_safe
-        return linebreaksbr(mark_safe(self.content.strip()))
+        return mark_safe(self.pre_rendered_content)
 
     class Meta:
         abstract = True
+
+    def save(self, *args, **kwargs):
+        from .markup import html_body
+        self.pre_rendered_content = html_body(self.content)
+        super(BaseContent, self).save(*args, **kwargs)
 
 class Page(BaseContent):
     url = models.CharField('URL', primary_key=True, max_length=200)
