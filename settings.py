@@ -4,6 +4,7 @@ SITE_NAME = 'All buttons pressed'
 SITE_DESCRIPTION = 'Hacking the cloud with Django and SproutCore. Mostly on App Engine.'
 SITE_COPYRIGHT = 'Waldemar Kornewald & Thomas Wanschik'
 DISQUS_SHORTNAME = 'allbuttonspressed'
+TWITTER_USERNAME = 'wkornewald' # used for tweet buttons
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 

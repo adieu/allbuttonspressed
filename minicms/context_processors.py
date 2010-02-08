@@ -9,4 +9,5 @@ def cms(request):
         'site_description': settings.SITE_DESCRIPTION,
         'site_copyright': settings.SITE_COPYRIGHT,
         'site_base_url': base_url,
+        'twitter_username': getattr(settings, 'TWITTER_USERNAME', None);
     }
