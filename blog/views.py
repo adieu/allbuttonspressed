@@ -12,9 +12,10 @@ POSTS_PER_PAGE = 5
 TWEETMEME_FEED_BUTTON = '<a href="http://api.tweetmeme.com/share?url=%(url)s" style="float: left"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
 
 def show(request, blog_url, post_url):
-    post = get_object_or_404(Post, url=post_url, blog=blog_url)
+    blog = get_object_or_404(Blog, base_url=blog_url)
+    post = get_object_or_404(Post, url=post_url, blog=blog)
     return direct_to_template(request, 'blog/post_detail.html',
-        {'post': post})
+        {'post': post, 'blog': blog})
 
 def browse(request, blog_url):
     blog = get_object_or_404(Blog, base_url=blog_url)

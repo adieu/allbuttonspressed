@@ -1,6 +1,6 @@
 {% extends 'blog/base.html' %}
 {% load disqus_tags %}
-{% block title %}{{ post.title }} - {{ post.blog.title }}{% endblock %}
+{% block title %}{{ post.title }} - {{ block.super }}{% endblock %}
 
 {% block content %}
 <div class="post post-detail">

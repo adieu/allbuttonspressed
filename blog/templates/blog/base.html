@@ -1,4 +1,6 @@
 {% extends 'base.html' %}
+{% block title %}{{ blog.title }}{% endblock %}
+
 {% block sidebar %}
 {% if blog.feedburner_id %}
 <form action="http://feedburner.google.com/fb/a/mailverify" target="popupwindow" method="post" onsubmit="window.open('http://feedburner.google.com/fb/a/mailverify?uri={{ blog.feedburner_id }}', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
