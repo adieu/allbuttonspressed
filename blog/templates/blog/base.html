@@ -3,6 +3,7 @@
 
 {% block sidebar %}
 {% if blog.feedburner_id %}
+<div class="sidebar-block">
 <form action="http://feedburner.google.com/fb/a/mailverify" target="popupwindow" method="post" onsubmit="window.open('http://feedburner.google.com/fb/a/mailverify?uri={{ blog.feedburner_id }}', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
 
 <p>
@@ -16,6 +17,7 @@
 <input value="Subscribe now!" type="submit"/>
 
 </form>
+</div>
 {% endif %}
 {{ block.super }}
 {% endblock %}

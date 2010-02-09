@@ -44,8 +44,8 @@ p, form table {
   margin: 0 0 18px;
 }
 
-ul {
-  margin: 0 0 18px 15px;
+ul, ol {
+  margin: 0 0 18px 18px;
 }
 
 form table th {
@@ -88,6 +88,10 @@ span form {
 
 /* reset end */
 
+.highlight {
+  margin-bottom: 18px;
+}
+
 #header, #footer {
   font-size: 11px;
 }
@@ -125,4 +129,16 @@ span form {
 #sidebar {
   margin-left: 20px;
   width: 250px;
+}
+
+.post-footer {
+  margin-bottom: 18px;
+}
+
+.sidebar-block {
+  margin-bottom: 18px;
+}
+
+#follow-us-sidebar {
+  margin-top: 8px;
 }

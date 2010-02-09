@@ -175,9 +175,6 @@ div.align-right {
 /* div.align-center * { */
 /*   text-align: left } */
 
-ol.simple, ul.simple {
-  margin-bottom: 1em }
-
 ol.arabic {
   list-style: decimal }
 
