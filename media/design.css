@@ -126,3 +126,84 @@ span form {
   margin-left: 20px;
   width: 250px;
 }
+
+/* custom css */
+
+#header {
+  height: 150px;
+  background-color: #F9F7ED;
+  border-top: 15px solid #36393D;
+  margin-bottom: 50px;
+}
+
+#header a {
+  color: #36393D;
+}
+
+#logo {
+  float: left;
+}
+.menu {
+  clear: both;
+  float: right;
+  margin: 20px;
+  margin-top: 90px;
+}
+
+.menu li {
+  display: inline;
+  margin: 0 0 0 25px;
+  list-style: none;
+  font-size: 17px;
+}
+
+.menu li.active {
+   background-color: white;
+  color: #0060C0;
+  padding: 3px 5px 6px 5px;
+  text-decoration: none;
+
+  -moz-border-radius-topleft: 4px; -moz-border-radius-topright: 4px;
+  -webkit-border-top-left-radius: 4px; -webkit-border-top-right-radius: 4px;
+  -ms-border-top-left-radius: 4px; -ms-border-top-right-radius: 4px;
+  border-top-left-radius: 4px; border-top-right-radius: 4px;
+}
+
+a {
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.blogroll {
+  margin: 30px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+.blogroll ul {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  margin-left: 0px;
+  margin-right: 0px;
+  list-style: none;
+}
+
+.blogroll ul li {
+  margin: 10px;
+  margin-left: 0px;
+  margin-right: 0px;
+}
+
+#footer {
+  background-color: #F9F7ED;
+  padding: 10px;
+  margin-top: 30px;
+  border-bottom: 15px solid #36393D;
+}
+
+#footer * {
+  text-align: center;
+}
