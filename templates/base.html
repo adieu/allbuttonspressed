@@ -8,10 +8,12 @@
   {% load cms blog %}
   <head>
     <title>{% block title %}{% endblock %} - {{ site_name }}</title>
-    {% render_feeds %}
+    {% blog_feeds %}
 
     {% block css %}
       <link rel="stylesheet" type="text/css" href="/media/design.css" />
+      <link rel="stylesheet" type="text/css" href="/media/rest.css" />
+      <link rel="stylesheet" type="text/css" href="/media/highlight.css" />
     {% endblock %}
 
     {% block js %}
