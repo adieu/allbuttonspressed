@@ -1,6 +1,15 @@
 from .views import show
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.conf import settings
+
+class RedirectMiddleware(object):
+    def process_request(self, request):
+        host = request.get_host().split(':')[0]
+        if settings.DEBUG or host == 'testserver' or \
+                not getattr(settings, 'ALLOWED_DOMAINS', None):
+            return
+        if host not in settings.ALLOWED_DOMAINS:
+            return HttpResponseRedirect('http://' + settings.ALLOWED_DOMAINS[0])
 
 class CMSFallbackMiddleware(object):
     def process_response(self, request, response):

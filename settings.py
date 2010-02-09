@@ -4,7 +4,12 @@ SITE_NAME = 'All buttons pressed'
 SITE_DESCRIPTION = 'Hacking the cloud with Django and SproutCore. Mostly on App Engine.'
 SITE_COPYRIGHT = 'Waldemar Kornewald & Thomas Wanschik'
 DISQUS_SHORTNAME = 'allbuttonspressed'
-TWITTER_USERNAME = 'wkornewald' # used for tweet buttons
+# Set RT username for retweet buttons
+TWITTER_USERNAME = 'wkornewald'
+# In order to always have uniform URLs in retweets and FeedBurner we redirect
+# any access to URLs that are not in ALLOWED_DOMAINS to the first allowed
+# domain. You can have additional domains for testing.
+ALLOWED_DOMAINS = ('www.allbuttonspressed.com',)
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 
@@ -20,6 +25,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    'minicms.middleware.RedirectMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'minicms.middleware.CMSFallbackMiddleware',
