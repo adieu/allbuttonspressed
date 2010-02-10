@@ -236,7 +236,11 @@ a:hover {
 
 #blogroll ul li {
   padding: 7px 0;
-  border-bottom: 1px dotted #36393D;
+}
+
+#cse-search-form {
+   display: inline;
+   float: right;
 }
 
 #footer {
