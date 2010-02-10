@@ -51,7 +51,7 @@ class Post(BaseContent):
         help_text="Changing the blog will also change the post's URL, so "
                   "better don't change it for a published post.")
     published = models.BooleanField(default=False)
-    author = models.ForeignKey(User, related_name='posts',
+    author = models.ForeignKey(User, related_name='posts', null=True, blank=True,
         help_text='Optional (filled automatically when saving)')
     url = models.CharField('URL', blank=True, max_length=200,
         help_text='Optional (filled automatically when publishing)')

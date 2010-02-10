@@ -4,6 +4,8 @@ SITE_NAME = 'All buttons pressed'
 SITE_DESCRIPTION = 'Hacking the cloud with Django and SproutCore. Mostly on App Engine.'
 SITE_COPYRIGHT = 'Waldemar Kornewald & Thomas Wanschik'
 DISQUS_SHORTNAME = 'allbuttonspressed'
+# Get the ID from the CSE "Basics" control panel ("Search engine unique ID")
+GOOGLE_CUSTOM_SEARCH_ID = '017404278116898980106:26qq4kokgxo'
 # Set RT username for retweet buttons
 TWITTER_USERNAME = 'wkornewald'
 # In order to always have uniform URLs in retweets and FeedBurner we redirect

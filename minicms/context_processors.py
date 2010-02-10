@@ -10,4 +10,5 @@ def cms(request):
         'site_copyright': settings.SITE_COPYRIGHT,
         'site_base_url': base_url,
         'twitter_username': getattr(settings, 'TWITTER_USERNAME', None),
+        'google_custom_search_id': settings.GOOGLE_CUSTOM_SEARCH_ID,
     }
