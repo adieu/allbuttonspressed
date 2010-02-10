@@ -127,11 +127,12 @@ span form {
 }
 
 #content {
-  width: 680px; 
+  width: 665px;
 }
 
 #sidebar {
   width: 250px;
+  margin-right: 25px;
 }
 
 /* custom css */
@@ -205,7 +206,7 @@ a:hover {
 }
 
 .sidebar-block {
-  margin-bottom: 20px;
+  margin-bottom: 30px;
 }
 
 #sidebar form {
