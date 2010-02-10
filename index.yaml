@@ -10,16 +10,6 @@ indexes:
 # automatically uploaded to the admin console when you next deploy
 # your application using appcfg.py.
 
-- kind: blog_blog
-  properties:
-  - name: __key__
-    direction: desc
-
-- kind: blog_post
-  properties:
-  - name: __key__
-    direction: desc
-
 - kind: blog_post
   properties:
   - name: blog_id
@@ -30,8 +20,8 @@ indexes:
 - kind: blog_post
   properties:
   - name: blog_id
+  - name: url
   - name: published_on
-    direction: desc
 
 - kind: django_admin_log
   properties:
@@ -43,13 +33,3 @@ indexes:
   properties:
   - name: app_label
   - name: name
-
-- kind: minicms_config
-  properties:
-  - name: __key__
-    direction: desc
-
-- kind: minicms_page
-  properties:
-  - name: __key__
-    direction: desc

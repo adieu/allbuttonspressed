@@ -1,24 +1,16 @@
-from .models import Config, Page
+from .models import Block, Page
 from django.contrib import admin
 
-class PKChangingAdmin(admin.ModelAdmin):
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        # Delete entity with old pk if the pk has changed.
-        # XXX: This doesn't update any references to the old entity, though.
-        if change:
-            pk = form.initial[self.model._meta.pk.attname]
-            if obj.pk != pk:
-                self.model.objects.filter(pk=pk).delete()
-
-class PageAdmin(PKChangingAdmin):
+class PageAdmin(admin.ModelAdmin):
     fields = ('url', 'title', 'content')
     list_display = ('url', 'title')
     search_fields = ('url',)
+    ordering = ('url',)
 
-class ConfigAdmin(PKChangingAdmin):
+class BlockAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
+    ordering = ('name',)
 
 admin.site.register(Page, PageAdmin)
-admin.site.register(Config, ConfigAdmin)
+admin.site.register(Block, BlockAdmin)

@@ -38,7 +38,7 @@ class BaseContent(models.Model):
         super(BaseContent, self).save(*args, **kwargs)
 
 class Page(BaseContent):
-    url = models.CharField('URL', primary_key=True, max_length=200)
+    url = models.CharField('URL', max_length=200)
 
     def __unicode__(self):
         return u"%s -- %s" % (self.url, self.title)
@@ -46,8 +46,8 @@ class Page(BaseContent):
     def get_absolute_url(self):
         return self.url
 
-class Config(models.Model):
-    name = models.CharField(primary_key=True, max_length=200)
+class Block(models.Model):
+    name = models.CharField(max_length=200)
     content = models.TextField(blank=True)
 
     def __unicode__(self):

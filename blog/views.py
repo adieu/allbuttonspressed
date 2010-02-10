@@ -1,8 +1,8 @@
 from .models import Blog, Post
+from datetime import datetime
 from django.conf import settings
 from django.contrib.syndication.views import Feed
-from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.feedgenerator import Atom1Feed
 from django.views.generic.list_detail import object_list
@@ -11,9 +11,15 @@ from django.views.generic.simple import direct_to_template
 POSTS_PER_PAGE = 5
 TWEETMEME_FEED_BUTTON = '<a href="http://api.tweetmeme.com/share?url=%(url)s" style="float: left"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
 
-def show(request, blog_url, post_url):
+def show(request, blog_url, year, month, post_url):
+    try:
+        start = datetime(int(year), int(month), 1)
+        end = datetime(int(year), int(month)+1, 1)
+    except:
+        raise Http404('Date format incorrect')
     blog = get_object_or_404(Blog, base_url=blog_url)
-    post = get_object_or_404(Post, url=post_url, blog=blog)
+    post = get_object_or_404(Post, url=post_url, blog=blog,
+        published_on__gte=start, published_on__lt=end)
     return direct_to_template(request, 'blog/post_detail.html',
         {'post': post, 'blog': blog})
 

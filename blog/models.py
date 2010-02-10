@@ -9,11 +9,10 @@ import re
 FEEDBURNER_ID = re.compile(r'^http://feeds.feedburner.com/([^/]+)/?$')
 
 class Blog(models.Model):
-    base_url = models.CharField('Base URL', primary_key=True, max_length=200,
+    base_url = models.CharField('Base URL', max_length=200,
         help_text='Example: With base URL "personal" your blog posts would '
                   'be below /blog/personal/...<br />'
-                  'Slashes ("/") are not allowed in this field.<br />'
-                  "<strong>You can't change this value afterwards.</strong>")
+                  'Slashes ("/") are not allowed in this field.<br />')
     title = models.CharField(max_length=200,
         help_text='This will also be your feed title')
     description = models.CharField(max_length=500, blank=True,
@@ -65,12 +64,13 @@ class Post(BaseContent):
     @permalink
     def get_absolute_url(self):
         return ('blog.views.show', (),
-                {'post_url': self.url, 'blog_url': self.blog_id})
+                {'post_url': self.url, 'blog_url': self.blog.base_url,
+                 'year': self.published_on.year,
+                 'month': '%02d' % self.published_on.month})
 
     def save(self, *args, **kwargs):
         if self.published and not self.published_on:
             self.published_on = datetime.now()
         if self.published and not self.url:
-            self.url = '%s/%s' % (self.published_on.strftime('%Y/%m'),
-                                  slugify(self.title))
+            self.url = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
