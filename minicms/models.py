@@ -20,6 +20,7 @@ class BaseContent(models.Model):
                   'See the <a href="'
                   'http://docutils.sourceforge.net/docs/user/rst/quickref.html'
                   '" target="_blank">quick reference</a> for more details.')
+    # This stores the generated HTML code from our wiki syntax
     pre_rendered_content = models.TextField(blank=True, editable=False)
 
     @property
@@ -31,6 +32,7 @@ class BaseContent(models.Model):
         abstract = True
 
     def save(self, *args, **kwargs):
+        # Pre-generate HTML code from our markup for faster access, later
         from .markup import html_body
         self.pre_rendered_content = html_body(self.content)
         super(BaseContent, self).save(*args, **kwargs)
