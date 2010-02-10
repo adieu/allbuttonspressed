@@ -132,7 +132,6 @@ span form {
 
 #sidebar {
   width: 250px;
-  margin-right: 25px;
 }
 
 /* custom css */
@@ -220,19 +219,24 @@ a:hover {
   margin-top: 8px;
 }
 
+#blogroll {
+  padding-right: 20px;
+  padding-left: 0px;
+}
+
 #blogroll h3 {
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 #blogroll ul {
+  margin-bottom: 10px;
   margin-left: 0px;
   list-style: none;
 }
 
 #blogroll ul li {
-  margin: 10px;
-  margin-left: 0px;
-  margin-right: 0px;
+  padding: 7px 0;
+  border-bottom: 1px dotted #36393D;
 }
 
 #footer {
