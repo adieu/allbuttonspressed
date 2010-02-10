@@ -40,10 +40,10 @@ class Blog(models.Model):
                 {'blog_url': self.base_url})
 
 def default_blog():
-    try:
-        return Blog.objects.get()
-    except Blog.DoesNotExist:
-        return None
+    blogs = Blog.objects.all()[:1]
+    if blogs:
+        return blogs[0]
+    return None
 
 class Post(BaseContent):
     blog = models.ForeignKey(Blog, related_name='posts',
