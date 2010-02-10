@@ -122,18 +122,26 @@ span form {
   width: 970px;
 }
 
+.column {
+  margin: 0px 10px;
+}
+
 #content {
-  width: 700px;
+  width: 680px; 
 }
 
 #sidebar {
-  margin-left: 20px;
   width: 250px;
 }
 
 /* custom css */
 
+body {
+  color: #36393D;
+}
+
 a {
+  color: #36393D;
   text-decoration: none;
 }
 
@@ -165,7 +173,7 @@ a:hover {
   display: inline;
   margin: 0 0 0 25px;
   list-style: none;
-  font-size: 17px;
+  font-size: 18px;
 }
 
 .menu li.active {
@@ -175,47 +183,52 @@ a:hover {
   margin-bottom: 15px;
 }
 
+.post {
+  padding-right: 15px;
+  padding-left: 15px;
+  line-height: 1.6em;
+}
+
 .post-footer {
   padding: 5px;
   background-color: #F9F7ED;
+  margin-bottom: 50px;
 
   -moz-border-radius: 5px;
 }
 
 .highlight {
   background-color: #F9F7ED;
+  border: 1px solid #36393D;
+  margin-bottom: 18px;
+  padding: 5px;
 }
 
 .sidebar-block {
-  margin-bottom: 18px;
-  border: 1px solid #36393D;
-  margin-bottom: 10px;
-  padding: 5px;
+  margin-bottom: 20px;
 }
 
 #sidebar form {
   background-color: #F9F7ED;
-  margin-bottom: 50px;
   padding: 10px;
   
   -moz-border-radius: 10px;
 }
 
 #follow-us-sidebar {
-  margin-bottom: 50px;
   margin-top: 8px;
 }
 
-.blogroll h3 {
+#blogroll h3 {
   margin-bottom: 10px;
 }
 
-.blogroll ul {
+#blogroll ul {
   margin-left: 0px;
   list-style: none;
 }
 
-.blogroll ul li {
+#blogroll ul li {
   margin: 10px;
   margin-left: 0px;
   margin-right: 0px;
@@ -223,7 +236,7 @@ a:hover {
 
 #footer {
   padding: 10px;
-  margin-top: 50px;
+  margin-top: 20px;
   border-top: 5px solid #36393D;
 }
 
