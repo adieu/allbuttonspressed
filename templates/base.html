@@ -28,7 +28,8 @@
       <a id="logo" href="/">{{ site_name }} <span id="description">{{ site_description }}</span></a>
       <ul class="menu">
         {% show_menu %}
-        <li>
+        {% if google_custom_search_id %}
+          <li>
             <div id="cse-search-form" style="width: 220px">Loading</div>
             <script src="http://www.google.com/jsapi" type="text/javascript"></script>
             <script type="text/javascript">
@@ -43,7 +44,8 @@
               }, true);
               /* ]]> */
             </script>
-        </li>
+          </li>
+        {% endif %}
       </ul>
     </div>
 
@@ -74,5 +76,20 @@
     <div id="footer">
       <p>Copyright {% now "Y" %} {{ site_copyright }}</p>
     </div>
+    
+    {% if google_analytics_id %}
+      <script type="text/javascript">
+      /* <![CDATA[ */
+      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+      /* ]]> */
+      </script>
+      <script type="text/javascript">
+      /* <![CDATA[ */try {
+      var pageTracker = _gat._getTracker("{{ google_analytics_id|escapejs }}");
+      pageTracker._trackPageview();
+      } catch(err) {}/* ]]> */</script>
+
+    {% endif %}
   </body>
 </html>
