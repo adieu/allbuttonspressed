@@ -25,26 +25,26 @@
   <body>
     <div id="header">
       <a id="logo" href="/">{{ site_name }} <span id="description">{{ site_description }}</span></a>
+      {% if google_custom_search_id %}
+        <span id="search">
+          <div id="cse-search-form">Loading</div>
+          <script src="http://www.google.com/jsapi" type="text/javascript"></script>
+          <script type="text/javascript">
+            google.load('search', '1', {language : 'en'});
+            google.setOnLoadCallback(function(){
+              var customSearchControl = new google.search.CustomSearchControl('013842355536421310315:sg4lqatbb1y');
+              customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
+              var options = new google.search.DrawOptions();
+              options.setSearchFormRoot('cse-search-form');
+              customSearchControl.draw('cse', options);
+            }, true);
+          </script>
+          <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
+          <link rel="stylesheet" type="text/css" href="/media/search-design.css" />
+        </span>
+      {% endif %}
       <ul class="menu">
         {% show_menu %}
-        {% if google_custom_search_id %}
-          <li>
-            <div id="cse-search-form">Loading</div>
-            <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-            <script type="text/javascript">
-              google.load('search', '1', {language : 'en'});
-              google.setOnLoadCallback(function(){
-                var customSearchControl = new google.search.CustomSearchControl('013842355536421310315:sg4lqatbb1y');
-                customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
-                var options = new google.search.DrawOptions();
-                options.setSearchFormRoot('cse-search-form');
-                customSearchControl.draw('cse', options);
-              }, true);
-            </script>
-            <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
-            <link rel="stylesheet" type="text/css" href="/media/search-design.css" />
-          </li>
-        {% endif %}
       </ul>
     </div>
 
@@ -60,7 +60,7 @@
           {% endif %}
         {% endblock %}
 
-        <div id="cse" style="width:100%;"></div>
+        <div id="cse" style="width:100%; display:inline;"></div>
 
         {% block content %}{% endblock %}
       </div>
