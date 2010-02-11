@@ -22,6 +22,8 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.contenttypes',
+    'django.contrib.sites',
+    'django.contrib.sitemaps',
     'minicms',
     'blog',
     'disqus',
@@ -39,6 +41,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'minicms.context_processors.cms',
+)
+
+TEMPLATE_LOADERS = (
+    'django.template.loaders.app_directories.load_template_source',
 )
 
 USE_I18N = False

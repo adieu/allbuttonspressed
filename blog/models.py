@@ -1,6 +1,7 @@
 from .utils import slugify
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.contrib.sitemaps import Sitemap
 from django.db import models
 from django.db.models import permalink
 from minicms.models import BaseContent
@@ -74,3 +75,12 @@ class Post(BaseContent):
         if self.published and not self.url:
             self.url = slugify(self.title)
         super(Post, self).save(*args, **kwargs)
+
+class PostsSitemap(Sitemap):
+    changefreq = "yearly"
+
+    def items(self):
+        return Post.objects.filter(published=True)
+
+    def lastmod(self, obj):
+        return obj.published_on
