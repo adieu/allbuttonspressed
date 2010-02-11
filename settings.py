@@ -6,7 +6,7 @@ SITE_COPYRIGHT = 'Waldemar Kornewald & Thomas Wanschik'
 DISQUS_SHORTNAME = 'allbuttonspressed'
 GOOGLE_ANALYTICS_ID = 'UA-12334792-3'
 # Get the ID from the CSE "Basics" control panel ("Search engine unique ID")
-GOOGLE_CUSTOM_SEARCH_ID = '017404278116898980106:26qq4kokgxo'
+GOOGLE_CUSTOM_SEARCH_ID = '013842355536421310315:sg4lqatbb1y'
 # Set RT username for retweet buttons
 TWITTER_USERNAME = 'wkornewald'
 # In order to always have uniform URLs in retweets and FeedBurner we redirect
