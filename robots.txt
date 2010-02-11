@@ -1,4 +1,2 @@
-User-Agent: *
-Allow: /
-
+User-agent: *
 Sitemap: http://www.allbuttonspressed.com/sitemap.xml
