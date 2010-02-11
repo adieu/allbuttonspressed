@@ -27,6 +27,7 @@ def browse(request, blog_url):
     blog = get_object_or_404(Blog, base_url=blog_url)
     query = Post.objects.filter(blog=blog, published=True)
     query = query.order_by('-published_on')
+    # TODO: add select_related('author')
     return object_list(request, query, paginate_by=POSTS_PER_PAGE,
         extra_context={'blog': blog})
 
