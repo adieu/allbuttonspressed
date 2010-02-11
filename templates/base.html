@@ -20,14 +20,15 @@
     {% endblock %}
 
     {% block extra-head %}{% endblock %}
+    <meta name="google-site-verification" content="NrOmvnSeEOkEb-yroqOh1Q3JFvjC4XFVVZ27Rb-HrYQ" />
   </head>
 
   <body>
     <div id="header">
       <a id="logo" href="/">{{ site_name }} <span id="description">{{ site_description }}</span></a>
       {% if google_custom_search_id %}
-        <span id="search">
-          <div id="cse-search-form">Loading</div>
+        <div id="search">
+          <div id="cse-search-form">Loading...</div>
           <script src="http://www.google.com/jsapi" type="text/javascript"></script>
           <script type="text/javascript">
             google.load('search', '1', {language : 'en'});
@@ -41,7 +42,7 @@
           </script>
           <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
           <link rel="stylesheet" type="text/css" href="/media/search-design.css" />
-        </span>
+        </div>
       {% endif %}
       <ul class="menu">
         {% show_menu %}
