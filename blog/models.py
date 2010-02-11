@@ -77,10 +77,10 @@ class Post(BaseContent):
         super(Post, self).save(*args, **kwargs)
 
 class PostsSitemap(Sitemap):
-    changefreq = "yearly"
+    changefreq = "daily"
 
     def items(self):
-        return Post.objects.filter(published=True)
+        return Post.objects.filter(published=True).order_by('-published_on')[:2000]
 
     def lastmod(self, obj):
-        return obj.published_on
+        return obj.last_update

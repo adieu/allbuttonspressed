@@ -168,13 +168,14 @@ a:hover {
 }
 
 #search {
+  display: inline;
   float:right;
 }
 
 .menu {
   clear: both;
   float: right;
-  margin-top: 40px;
+  margin-top: 35px;
 }
 
 .menu li {
