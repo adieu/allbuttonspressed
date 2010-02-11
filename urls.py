@@ -1,5 +1,5 @@
 from django.conf.urls.defaults import *
-from blog.modles import PostsSitemap
+from blog.models import PostsSitemap
 
 sitemaps = {
     'tag': PostsSitemap,

@@ -43,10 +43,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'minicms.context_processors.cms',
 )
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.app_directories.load_template_source',
-)
-
 USE_I18N = False
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
