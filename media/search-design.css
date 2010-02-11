@@ -39,30 +39,30 @@ input.gsc-search-button {
 
 .gs-webResult.gs-result a.gs-title:link,
 .gs-webResult.gs-result a.gs-title:link b {
-  color: #36393D;
+  color: #1985B5;
 }
 
 .gs-webResult.gs-result a.gs-title:visited,
 .gs-webResult.gs-result a.gs-title:visited b {
-  color: #36393D;
+  color: #1985B5;
 }
 
 .gs-webResult.gs-result a.gs-title:hover,
 .gs-webResult.gs-result a.gs-title:hover b {
-  color: #36393D;
+  color: #1985B5;
 }
 
 .gs-webResult.gs-result a.gs-title:active,
 .gs-webResult.gs-result a.gs-title:active b {
-  color: #36393D;
+  color: #1985B5;
 }
 
 .gsc-cursor-page {
-  color: #36393D;
+  color: #1985B5;
 }
 
 a.gsc-trailing-more-results:link {
-  color: #36393D;
+  color: #1985B5;
 }
 
 .gs-webResult.gs-result .gs-snippet {
