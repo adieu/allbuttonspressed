@@ -20,5 +20,10 @@ handlers:
 - url: /media
   static_dir: media
 
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+  secure: optional
+
 - url: /.*
   script: common-apps/djangoappengine/main/main.py
