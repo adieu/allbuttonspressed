@@ -13,7 +13,7 @@ class Blog(models.Model):
     base_url = models.CharField('Base URL', max_length=200,
         help_text='Example: With base URL "personal" your blog posts would '
                   'be below /blog/personal/...<br />'
-                  'Slashes ("/") are not allowed in this field.<br />')
+                  'Slashes ("/") are not allowed in this field.')
     title = models.CharField(max_length=200,
         help_text='This will also be your feed title')
     description = models.CharField(max_length=500, blank=True,

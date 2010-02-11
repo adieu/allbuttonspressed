@@ -72,9 +72,10 @@ class LatestEntriesFeed(Feed):
         return post.published_on
 
     def items(self, blog):
-        query = Post.objects.filter(blog=blog).order_by('-published_on')
+        query = Post.objects.filter(blog=blog, published=True).order_by(
+            '-published_on')
         # TODO: add select_related('author') once it's supported
-        return query[:50]
+        return query[:100]
 
 @feedburner
 def latest_entries_feed(request, *args, **kwargs):

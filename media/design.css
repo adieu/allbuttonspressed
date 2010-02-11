@@ -205,6 +205,11 @@ a:hover {
   -moz-border-radius: 5px;
 }
 
+.tweetmeme-button {
+ float:left;
+ margin-right: 10px;
+}
+
 .highlight {
   background-color: #F0EDDE;
   border: 1px solid #36393D;
