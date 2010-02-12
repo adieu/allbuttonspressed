@@ -2,6 +2,11 @@
 {% load disqus_tags %}
 {% block title %}{{ post.title }} - {{ block.super }}{% endblock %}
 
+{% block extra-head %}
+{{ block.super }}
+<meta name="description" content="{{ post.rendered_content|truncatewords_html:25 }}" />
+{% endblock %}
+
 {% block content %}
 <div class="post post-detail">
 {% include 'blog/post.html' %}

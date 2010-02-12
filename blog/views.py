@@ -15,7 +15,7 @@ def show(request, blog_url, year, month, post_url):
     try:
         start = datetime(int(year), int(month), 1)
         end = datetime(int(year), int(month)+1, 1)
-    except:
+    except ValueError:
         raise Http404('Date format incorrect')
     blog = get_object_or_404(Blog, base_url=blog_url)
     post = get_object_or_404(Post, url=post_url, blog=blog,

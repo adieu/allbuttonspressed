@@ -2,7 +2,7 @@ from djangoappengine.settings_base import *
 
 SITE_NAME = 'All buttons pressed'
 SITE_DESCRIPTION = 'Hacking the cloud with Django and SproutCore. Mostly on App Engine.'
-SITE_COPYRIGHT = 'Waldemar Kornewald & Thomas Wanschik'
+SITE_COPYRIGHT = 'the author'
 DISQUS_SHORTNAME = 'allbuttonspressed'
 GOOGLE_ANALYTICS_ID = 'UA-12334792-3'
 # Get the ID from the CSE "Basics" control panel ("Search engine unique ID")
