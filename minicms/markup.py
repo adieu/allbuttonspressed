@@ -1,4 +1,4 @@
-from . import markup_highlight
+from . import markup_highlight, feed
 from docutils import core, io
 import os
 

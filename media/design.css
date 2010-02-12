@@ -113,21 +113,25 @@ span form {
   margin: 0;
 }
 
+/* custom */
+
 #footer {
   margin: 0 auto 0;
   padding: 40px 0;
 }
 
-#header, .columns, #footer {
+#header, #footer {
   width: 970px;
 }
 
-.column {
-  margin: 0px 10px;
+.columns {
+  padding: 0px 25px;
+  width: 920px;
 }
 
 #content {
-  width: 665px;
+  width: 635px;
+  margin-right: 35px;
 }
 
 #sidebar {
@@ -188,13 +192,20 @@ a:hover {
 .menu li.active {
 }
 
-.post h1 {
+h1 {
   margin-bottom: 15px;
 }
 
+h2 a.external {
+  color: #36393D;
+  text-decoration: none;
+}
+
+h2 a.external:hover {
+  text-decoration: underline;
+}
+
 .post {
-  padding-right: 15px;
-  padding-left: 15px;
   line-height: 1.6em;
 }
 
@@ -263,4 +274,12 @@ a:hover {
 
 #footer * {
   text-align: center;
+}
+
+.feed-widget {
+   margin-bottom: 10px;
+}
+
+.section {
+  margin-bottom: 30px;
 }

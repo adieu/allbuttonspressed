@@ -1,4 +1,8 @@
 .gsc-control-cse {
+  border: none;
+  padding: 0;
+}
+.gsc-control-cse {
   font-family: Arial, sans-serif;
   border-color: #FFFFFF;
   background-color: #FFFFFF;
@@ -119,4 +123,8 @@ a.gsc-trailing-more-results:link {
 .gs-promotion.gs-result .gs-visibleUrl,
 .gs-promotion.gs-result .gs-visibleUrl-short {
   color: #008000;
+}
+
+div.gsc-clear-button {
+  margin-right: 0px;
 }
