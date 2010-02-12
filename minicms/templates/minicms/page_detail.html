@@ -3,7 +3,7 @@
 
 {% block extra-head %}
 {{ block.super }}
-<meta name="description" content="{{ page.rendered_content|truncatewords_html:25 }}" />
+<meta name="description" content="{{ page.rendered_content|striptags|truncatewords:25 }}" />
 {% endblock %}
 
 {% block content %}
