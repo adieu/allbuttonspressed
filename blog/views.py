@@ -64,7 +64,7 @@ class LatestEntriesFeed(Feed):
                                  self._request.get_host(),
                                  post.get_absolute_url())
         header = TWEETMEME_FEED_BUTTON % {'url': url}
-        return TWEETMEME_FEED_BUTTON + post.rendered_content
+        return header + post.rendered_content
 
     def item_author_name(self, post):
         return post.author.get_full_name()
