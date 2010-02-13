@@ -29,7 +29,7 @@ h2 {
 }
 
 h3 {
-  font-size: 15px;
+  font-size: 14px;
 }
 
 h4 {
@@ -136,6 +136,7 @@ span form {
 
 #sidebar {
   width: 250px;
+  float: right;
 }
 
 /* custom css */
@@ -293,6 +294,32 @@ h2 a.external:hover {
    margin-bottom: 10px;
 }
 
+div.profile-img-div.figure.align-left {
+  margin-left: 0;
+}
+
+.profile-img {
+  padding: 5px;
+  border: 1px solid #F0EDDA;
+}
+
+p.dsq-widget-meta {
+  background-color: #F0EDDE;
+  padding: 5px;
+
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
+}
+
+ul.dsq-widget-list {
+  margin: 0;
+}
+
+.gs-webResult.gs-result .gs-title .gs-title a:hover {
+  text-decoration: underline;
+}
 /* TODO FIX THIS */
 
 .section {
