@@ -7,7 +7,7 @@
     lang="{% firstof LANGUAGE_CODE 'en' %}">
   {% load cms blog %}
   <head>
-    <title>{% block title %}{% endblock %} - {{ site_name }}</title>
+    <title>{% if request.path != '/' %}{% block title %}{% endblock %} - {% endif %}{{ site_name }}</title>
     {% blog_feeds %}
 
     {% block css %}
