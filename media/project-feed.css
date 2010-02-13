@@ -9,6 +9,9 @@
   border: 1px solid #F0EDDE;
 
   -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .gfg-title {

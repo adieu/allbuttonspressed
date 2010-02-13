@@ -222,6 +222,9 @@ h2 a.external:hover {
   margin-bottom: 50px;
 
   -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -ms-border-radius: 5px;
+  border-radius: 5px;
 }
 
 .tweetmeme-button {
@@ -243,8 +246,11 @@ h2 a.external:hover {
 #sidebar form {
   background-color: #F0EDDE;
   padding: 10px;
-  
+
   -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  -ms-border-radius: 10px;
+  border-radius: 10px;
 }
 
 #follow-us-sidebar {
