@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load cms %}
 {% block title %}{{ blog.title }}{% endblock %}
 
 {% block sidebar %}
@@ -20,4 +21,5 @@
 </div>
 {% endif %}
 {{ block.super }}
+{% show_block 'blogroll' %}
 {% endblock %}
