@@ -36,7 +36,8 @@ def feedburner(feed):
     def _feed(request, blog_url):
         blog = get_object_or_404(Blog, base_url=blog_url)
         if not blog.feed_redirect_url or \
-                request.META['HTTP_USER_AGENT'].startswith('FeedBurner'):
+                request.META['HTTP_USER_AGENT'].startswith('FeedBurner') or \
+                request.GET.get('override-redirect') == '1':
             return feed(request, blog=blog)
         return HttpResponseRedirect(blog.feed_redirect_url)
     return _feed
@@ -51,7 +52,7 @@ class LatestEntriesFeed(Feed):
         return '%s - %s' % (blog.title, settings.SITE_NAME)
 
     def link(self, blog):
-        return blog.get_feed_url()
+        return blog.get_absolute_url()
 
     def subtitle(self, blog):
         return blog.description

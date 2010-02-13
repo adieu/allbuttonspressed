@@ -35,6 +35,11 @@ class Blog(models.Model):
         return None
 
     @permalink
+    def get_absolute_url(self):
+        return ('blog.views.browse', (),
+                {'blog_url': self.base_url})
+
+    @permalink
     def get_feed_url(self):
         return ('blog.views.latest_entries_feed', (),
                 {'blog_url': self.base_url})
