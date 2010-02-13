@@ -22,11 +22,11 @@ class Feed(Directive):
         id = directives.uri(self.arguments[1])
         title = self.options['title']
         reverse = 'reverse' in self.options
-        align = self.options.get('align')
-        num_results = self.options.get('num_results')
+        align = self.options.get('align', '')
+        num_results = self.options.get('num_results', 50)
 
         reverse_inner = """result.feed.entries.reverse();
-        result.feed.entries = result.feed.entries.slice(0, 2);"""
+        result.feed.entries = result.feed.entries.slice(0, %s);""" %num_results
         
         code = """
           <!-- ++Begin Dynamic Feed Wizard Generated Code++ -->
@@ -75,8 +75,8 @@ class Feed(Directive):
           </script>
           <!-- ++End Dynamic Feed Control Wizard Generated Code++ -->
         """ %{'reverse': reverse_inner if reverse else '', 'id':id,
-            'title':title, 'url':url, 'align': 'float:%s' %align if align else '',
-            'num_results': num_results if num_results else 50}
+            'title':title, 'url':url, 'align': 'float:%s' %align,
+            'num_results': num_results}
         
         feed_node = nodes.raw('', code, format='html')
         return [feed_node]
