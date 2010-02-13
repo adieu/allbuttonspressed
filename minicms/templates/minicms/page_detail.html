@@ -7,6 +7,6 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{ page.title }}</h1>
+{% if page.url != '/' %}<h1>{{ page.title }}</h1>{% endif %}
 {{ page.rendered_content }}
 {% endblock %}
