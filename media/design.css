@@ -154,7 +154,7 @@ a:hover {
 }
 
 #header {
-  height: 180px;
+  height: 135px;
   border-bottom: 4px solid #36393D;
   border-top: 4px solid #36393D;
   margin-bottom: 50px;
@@ -172,6 +172,7 @@ a:hover {
 
 #logo {
   float: left;
+  margin-left: 350px;
 }
 
 #logo img {
@@ -186,8 +187,9 @@ a:hover {
 .menu {
   clear: both;
   float: left;
+  margin:0 75px;
   margin-top: 25px;
-  margin-left:0;
+  width: 840px;
 }
 
 .menu li {
