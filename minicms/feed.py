@@ -62,7 +62,7 @@ class Feed(Directive):
                  url: '%(url)s'
                 }];
               var options = {
-                numResults: %(num_results)s,
+                numResults: %(pre_fetch)s,
                 feedLoadCallback: reverse_order
               };
 
@@ -76,7 +76,7 @@ class Feed(Directive):
           <!-- ++End Dynamic Feed Control Wizard Generated Code++ -->
         """ %{'reverse': reverse_inner if reverse else '', 'id':id,
             'title':title, 'url':url, 'align': 'float:%s' %align,
-            'num_results': num_results}
+            'num_results': num_results, 'pre_fetch': 50 if reverse else num_results}
         
         feed_node = nodes.raw('', code, format='html')
         return [feed_node]
