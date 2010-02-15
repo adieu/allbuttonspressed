@@ -145,7 +145,7 @@ body {
   color: #36393D;
 }
 
-ul {
+.relevant-projects {
   list-style: none;
 }
 
@@ -192,7 +192,7 @@ a:hover {
   float: left;
   margin:0 75px;
   margin-top: 25px;
-  width: 840px;
+  width: 860px;
 }
 
 .menu li {
@@ -203,7 +203,7 @@ a:hover {
 }
 
 .menu li.active-menu-item {
-  font-weigth: bold;
+  font-weight: bold;
   color: black;
 }
 
@@ -339,11 +339,3 @@ ul.dsq-widget-list {
   margin: 0;
 }
 
-.gs-webResult.gs-result .gs-title .gs-title a:hover {
-  text-decoration: underline;
-}
-/* TODO FIX THIS */
-
-.section {
-  margin-bottom: 30px;
-}
