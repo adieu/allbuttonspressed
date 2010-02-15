@@ -9,7 +9,7 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
 POSTS_PER_PAGE = 5
-TWEETMEME_FEED_BUTTON = '<a href="http://api.tweetmeme.com/share?url=%(url)s" style="float: left"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
+TWEETMEME_FEED_BUTTON = '<a href="http://api.tweetmeme.com/share?url=%(url)s" style="float: left; margin-right: 10px;"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
 
 def show(request, blog_url, year, month, post_url):
     try:
