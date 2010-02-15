@@ -29,17 +29,19 @@ def show_menu(context, name='menu'):
         pass
 
     # Mark the best-matching URL as active
-    if request.path != '/':
-        active = None
-        active_len = 0
+    active = None
+    active_len = 0
+    # Normalize path
+    path = request.path.rstrip('/') + '/'
+    for item in menu:
         # Normalize path
-        path = request.path.rstrip('/') + '/'
-        for item in menu:
-            # Normalize path
-            url = item['url'].rstrip('/') + '/'
-            if path.startswith(url) and len(url) > active_len:
-                active = item
-                active_len = len(url)
-        if active is not None:
-            active['active'] = True
+        url = item['url'].rstrip('/') + '/'
+        # Root is only active if you have a "Home" link
+        if path != '/' and url == '/':
+            continue
+        if path.startswith(url) and len(url) > active_len:
+            active = item
+            active_len = len(url)
+    if active is not None:
+        active['active'] = True
     return {'menu': menu}
