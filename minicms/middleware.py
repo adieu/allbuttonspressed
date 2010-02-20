@@ -2,18 +2,6 @@ from .views import show
 from django.http import Http404, HttpResponseRedirect
 from django.conf import settings
 
-class RedirectMiddleware(object):
-    def process_request(self, request):
-        host = request.get_host().split(':')[0]
-        # Turn off redirects when in debug mode, running unit tests, or
-        # when handling an App Engine cron job.
-        if settings.DEBUG or host == 'testserver' or \
-                not getattr(settings, 'ALLOWED_DOMAINS', None) or \
-                request.META.get('HTTP_X_APPENGINE_CRON') == 'true':
-            return
-        if host not in settings.ALLOWED_DOMAINS:
-            return HttpResponseRedirect('http://' + settings.ALLOWED_DOMAINS[0])
-
 class CMSFallbackMiddleware(object):
     def process_response(self, request, response):
         if response.status_code != 404:
