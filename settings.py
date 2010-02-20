@@ -32,7 +32,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'minicms.middleware.RedirectMiddleware',
+    'djangotoolbox.middleware.RedirectMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'minicms.middleware.CMSFallbackMiddleware',
