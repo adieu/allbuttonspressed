@@ -9,7 +9,7 @@ class BlogAdmin(admin.ModelAdmin):
 class PostAdmin(admin.ModelAdmin):
     fieldsets = (
         (None, {
-            'fields': ('title', 'content', 'blog', 'published'),
+            'fields': ('title', 'blog', 'content', 'published'),
         }),
         ('Advanced options', {
             'classes': ('collapse',),

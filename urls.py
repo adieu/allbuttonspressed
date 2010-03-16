@@ -1,6 +1,8 @@
 from django.conf.urls.defaults import *
 from blog.models import PostsSitemap
 
+handler500 = 'djangotoolbox.errorviews.server_error'
+
 sitemaps = {
     'tag': PostsSitemap,
 }
