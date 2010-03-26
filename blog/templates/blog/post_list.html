@@ -1,6 +1,11 @@
 {% extends 'blog/base.html' %}
 {% load disqus_tags %}
 
+{% block extra-head %}
+{{ block.super }}
+<meta name="description" content="{{ blog.description|striptags|truncatewords:20 }}" />
+{% endblock %}
+
 {% block content %}
 {% for post in object_list %}
   <div class="post post-in-list">
