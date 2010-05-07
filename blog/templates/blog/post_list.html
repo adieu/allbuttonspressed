@@ -17,7 +17,7 @@
 {% endfor %}
 
 <div class="pagenav">
-  {% if has_previous %}
+  {% if has_next %}
     <a href="{{ request.path }}?page={{ next }}">&lt;-older</a>
   {% endif %}
   {% if has_previous %}
