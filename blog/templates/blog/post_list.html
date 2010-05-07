@@ -21,7 +21,7 @@
     <a href="{{ request.path }}?page={{ next }}">&lt;-older</a>
   {% endif %}
   {% if has_previous %}
-    <a href="{{ request.path }}{% if previous %}?page={{ previous }}{% endif %}">newer->&gt;</a>
+    <a href="{{ request.path }}{% if previous != 1 %}?page={{ previous }}{% endif %}">newer->&gt;</a>
   {% endif %}
 </div>
 
