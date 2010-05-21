@@ -1,7 +1,10 @@
-from djangoappengine.settings_base import *
+try:
+    from djangoappengine.settings_base import *
+except ImportError:
+    pass
 
 SITE_NAME = 'All buttons pressed'
-SITE_DESCRIPTION = 'Hacking the cloud with Django and SproutCore. Mostly on App Engine.'
+SITE_DESCRIPTION = 'Hacking the cloud with Django on non-relational DBs.'
 SITE_COPYRIGHT = 'the author'
 DISQUS_SHORTNAME = 'allbuttonspressed'
 GOOGLE_ANALYTICS_ID = 'UA-12334792-3'
