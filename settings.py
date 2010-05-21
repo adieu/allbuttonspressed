@@ -17,7 +17,7 @@ import os
 #        'USER': '',
 #        'PASSWORD': '',
 #        'HOST': 'localhost',
-#        'PORT': '27017',
+#        'PORT': 27017,
 #        'SUPPORTS_TRANSACTIONS': False,
 #    }
 #}
