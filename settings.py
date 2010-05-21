@@ -1,7 +1,27 @@
 try:
     from djangoappengine.settings_base import *
+    has_djangoappengine = True
 except ImportError:
-    pass
+    has_djangoappengine = False
+    DEBUG = True
+    TEMPLATE_DEBUG = DEBUG
+
+import os
+
+# Uncomment the following if you want to use MongoDB
+# -----------------
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django_mongodb_engine.mongodb',
+#        'NAME': 'test',
+#        'USER': '',
+#        'PASSWORD': '',
+#        'HOST': 'localhost',
+#        'PORT': '27017',
+#        'SUPPORTS_TRANSACTIONS': False,
+#    }
+#}
+# -----------------
 
 SITE_NAME = 'All buttons pressed'
 SITE_DESCRIPTION = 'Hacking the cloud with Django on non-relational DBs.'
@@ -22,7 +42,6 @@ SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 SITE_ID = 4094
 
 INSTALLED_APPS = (
-    'djangoappengine',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.sessions',
@@ -33,6 +52,9 @@ INSTALLED_APPS = (
     'blog',
     'disqus',
 )
+
+if has_djangoappengine:
+    INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
 
 MIDDLEWARE_CLASSES = (
     'djangotoolbox.middleware.RedirectMiddleware',
@@ -51,6 +73,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 USE_I18N = False
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
-
-import os
+MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
+
+ROOT_URLCONF = 'urls'
