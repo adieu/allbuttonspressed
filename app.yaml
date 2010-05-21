@@ -11,7 +11,7 @@ handlers:
   login: admin
 
 - url: /_ah/queue/deferred
-  script: common-apps/djangoappengine/deferred/handler.py
+  script: djangoappengine/deferred/handler.py
   login: admin
 
 - url: /blank.html
@@ -19,7 +19,7 @@ handlers:
   upload: blank.html
 
 - url: /media/admin
-  static_dir: common-apps/django/contrib/admin/media
+  static_dir: django/contrib/admin/media
 
 - url: /media
   static_dir: media
@@ -30,4 +30,4 @@ handlers:
   secure: optional
 
 - url: /.*
-  script: common-apps/djangoappengine/main/main.py
+  script: djangoappengine/main/main.py
