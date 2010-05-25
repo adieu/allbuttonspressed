@@ -15,3 +15,4 @@ settings_overrides.py
 nbproject
 django
 django_mongodb_engine
+djangotoolbox

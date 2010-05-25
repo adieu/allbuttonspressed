@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'minicms',
     'blog',
     'disqus',
+    'djangotoolbox',
 )
 
 if has_djangoappengine:
