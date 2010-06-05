@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 try:
     from djangoappengine.settings_base import *
     has_djangoappengine = True
@@ -25,7 +26,7 @@ import os
 
 SITE_NAME = 'All buttons pressed'
 SITE_DESCRIPTION = 'Hacking the cloud with Django on non-relational DBs.'
-SITE_COPYRIGHT = 'the author'
+SITE_COPYRIGHT = u'Waldemar Kornewald, Thomas Wanschik, Johannes Dörr'
 DISQUS_SHORTNAME = 'allbuttonspressed'
 GOOGLE_ANALYTICS_ID = 'UA-12334792-3'
 # Get the ID from the CSE "Basics" control panel ("Search engine unique ID")
