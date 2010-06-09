@@ -27,16 +27,16 @@ import os
 SITE_NAME = 'All buttons pressed'
 SITE_DESCRIPTION = 'Hacking the cloud with Django on non-relational DBs.'
 SITE_COPYRIGHT = u'Waldemar Kornewald, Thomas Wanschik, Johannes Dörr'
-DISQUS_SHORTNAME = 'allbuttonspressed'
-GOOGLE_ANALYTICS_ID = 'UA-12334792-3'
+DISQUS_SHORTNAME = ''
+GOOGLE_ANALYTICS_ID = ''
 # Get the ID from the CSE "Basics" control panel ("Search engine unique ID")
-GOOGLE_CUSTOM_SEARCH_ID = '013842355536421310315:sg4lqatbb1y'
+GOOGLE_CUSTOM_SEARCH_ID = ''
 # Set RT username for retweet buttons
-TWITTER_USERNAME = 'wkornewald'
+TWITTER_USERNAME = ''
 # In order to always have uniform URLs in retweets and FeedBurner we redirect
 # any access to URLs that are not in ALLOWED_DOMAINS to the first allowed
 # domain. You can have additional domains for testing.
-ALLOWED_DOMAINS = ('www.allbuttonspressed.com',)
+ALLOWED_DOMAINS = ()
 
 SECRET_KEY = '=r-$b*8hglm+858&9t043hlm6-&6-3d3vfc4((7yd0dbrakhvi'
 
@@ -79,3 +79,8 @@ MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
 ROOT_URLCONF = 'urls'
+
+try:
+    from settings_local import *
+except ImportError:
+    pass
