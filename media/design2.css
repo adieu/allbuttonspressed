@@ -189,16 +189,15 @@ a:hover {
 
 .menu {
   clear: both;
-  float: left;
-  margin:0 75px;
-  margin-top: 25px;
-  width: 860px;
+  list-style: none;
+  text-align: center;
+  margin: 0;
+  padding: 25px 0 0 0;
 }
 
 .menu li {
   display: inline;
   margin: 0 25px 0 0;
-  list-style: none;
   font-size: 18px;
 }
 
