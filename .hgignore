@@ -16,4 +16,7 @@ django
 django_mongodb_engine
 djangotoolbox
 mediagenerator
+pyjs
+pymeta
+pyvascript
 settings_local.py
