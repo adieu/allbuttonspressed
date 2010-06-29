@@ -1,3 +1,4 @@
+import os.path
 # -*- coding: utf-8 -*-
 try:
     from djangoappengine.settings_base import *
@@ -53,6 +54,7 @@ INSTALLED_APPS = (
     'blog',
     'disqus',
     'djangotoolbox',
+    'mediagenerator',
 )
 
 if has_djangoappengine:
@@ -77,6 +79,32 @@ USE_I18N = False
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
+
+GENERATE_MEDIA = {
+    'css': {
+        'main': (
+            'design.css',
+            'rest.css',
+            'highlight.css',
+            'project-feed.css',
+        ),
+        'search': (
+            'search-design.css',
+        ),
+    },
+}
+
+YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'yuicompressor.jar')
+if os.path.exists(YUICOMPRESSOR_PATH):
+    ROOT_MEDIA_FILTER = 'mediagenerator.filters.yuicompressor.YUICompressor'
+
+MEDIA_DEV_MODE = DEBUG
+if MEDIA_DEV_MODE:
+    MEDIA_URL = '/devmedia/'
+else:
+    MEDIA_URL = '/media/'
+
+GLOBAL_MEDIA_DIRS = (os.path.join(os.path.dirname(__file__), 'media'),)
 
 ROOT_URLCONF = 'urls'
 

@@ -8,7 +8,7 @@ syntax: glob
 *.pyo
 *.swp
 *.tmp
-_generated_media
+_generated_media*
 .dynamic_media
 desktop.ini
 settings_overrides.py
@@ -16,4 +16,5 @@ nbproject
 django
 django_mongodb_engine
 djangotoolbox
+mediagenerator
 settings_local.py

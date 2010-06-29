@@ -1,6 +1,7 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+{% load media %}
 <html xmlns="http://www.w3.org/1999/xhtml"
     dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
     xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
@@ -11,13 +12,10 @@
     {% blog_feeds %}
 
     {% block css %}
-      <link rel="stylesheet" type="text/css" href="/media/design.css" />
-      <link rel="stylesheet" type="text/css" href="/media/rest.css" />
-      <link rel="stylesheet" type="text/css" href="/media/highlight.css" />
-      <link rel="stylesheet" type="text/css" href="/media/project-feed.css" />
+      {% include_media 'css' 'main' %}
     {% endblock %}
 
-    {% block js %}
+    {% block preload_js %}
     {% endblock %}
 
     {% block extra-head %}{% endblock %}
@@ -42,7 +40,7 @@
             }, true);
           </script>
           <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
-          <link rel="stylesheet" type="text/css" href="/media/search-design.css" />
+          {% include_media 'css' 'search' %}
         </div>
       {% endif %}
       <ul class="menu">
@@ -78,6 +76,9 @@
       <p>Copyright {% now "Y" %} {{ site_copyright }}</p>
     </div>
     
+    {% block js %}
+    {% endblock %}
+
     {% if google_analytics_id %}
       <script type="text/javascript">
       /* <![CDATA[ */
