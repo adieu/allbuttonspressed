@@ -98,7 +98,11 @@ YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'y
 if os.path.exists(YUICOMPRESSOR_PATH):
     ROOT_MEDIA_FILTER = 'mediagenerator.filters.yuicompressor.YUICompressor'
 
-MEDIA_DEV_MODE = DEBUG
+# Instead of "combined" you can set MEDIA_DEV_MODE to True to get individual
+# medie files. This can be very helpful for debugging because it's easier to
+# find the file that contains the bug.
+#MEDIA_DEV_MODE = DEBUG
+MEDIA_DEV_MODE = DEBUG and 'combined'
 if MEDIA_DEV_MODE:
     MEDIA_URL = '/devmedia/'
 else:
