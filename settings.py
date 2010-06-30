@@ -1,4 +1,3 @@
-import os.path
 # -*- coding: utf-8 -*-
 try:
     from djangoappengine.settings_base import *
@@ -61,6 +60,7 @@ if has_djangoappengine:
     INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
 
 MIDDLEWARE_CLASSES = (
+    'django.middleware.common.CommonMiddleware',
     'djangotoolbox.middleware.RedirectMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
