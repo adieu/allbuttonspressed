@@ -338,3 +338,7 @@ ul.dsq-widget-list {
   margin: 0;
 }
 
+blockquote {
+    padding: 0px 30px;
+}
+
