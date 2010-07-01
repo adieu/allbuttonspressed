@@ -83,7 +83,11 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 GENERATE_MEDIA = {
     'css': {
         'main': (
-            'design.css',
+            {'filter': 'mediagenerator.filters.sass.Sass',
+             'input': (
+                'reset.sass',
+                'design.sass',
+            )},
             'rest.css',
             'highlight.css',
             'project-feed.css',
