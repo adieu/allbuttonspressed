@@ -80,14 +80,11 @@ ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
-GENERATE_MEDIA = {
+MEDIA_GROUPS = {
     'css': {
         'main': (
-            {'filter': 'mediagenerator.filters.sass.Sass',
-             'input': (
-                'reset.sass',
-                'design.sass',
-            )},
+            'reset.sass',
+            'design.sass',
             'rest.css',
             'highlight.css',
             'project-feed.css',
@@ -100,7 +97,10 @@ GENERATE_MEDIA = {
 
 YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'yuicompressor.jar')
 if os.path.exists(YUICOMPRESSOR_PATH):
-    ROOT_MEDIA_FILTER = 'mediagenerator.filters.yuicompressor.YUICompressor'
+    ROOT_MEDIA_FILTERS = {
+        'js': 'mediagenerator.filters.yuicompressor.YUICompressor',
+        'css': 'mediagenerator.filters.yuicompressor.YUICompressor',
+    }
 
 MEDIA_DEV_MODE = DEBUG
 if MEDIA_DEV_MODE:
