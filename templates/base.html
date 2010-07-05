@@ -12,7 +12,7 @@
     {% blog_feeds %}
 
     {% block css %}
-      {% include_media 'css' 'main' %}
+      {% include_media 'main.css' %}
     {% endblock %}
 
     {% block preload_js %}
@@ -40,7 +40,7 @@
             }, true);
           </script>
           <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
-          {% include_media 'css' 'search' %}
+          {% include_media 'search.css' %}
         </div>
       {% endif %}
       <ul class="menu">
@@ -73,7 +73,12 @@
     </div>
 
     <div id="footer">
-      <p>Copyright {% now "Y" %} {{ site_copyright }}</p>
+      <p>
+        Copyright {% now "Y" %} {{ site_copyright }}<br />
+        Powered by <a href="http://www.allbuttonspressed.com/projects/django-nonrel">Django-nonrel</a>,
+        <a href="http://code.google.com/appengine/">App Engine</a>, and
+        <a href="http://www.allbuttonspressed.com/projects/allbuttonspressed">All Buttons Pressed</a>
+      </p>
     </div>
 
     {% block js %}

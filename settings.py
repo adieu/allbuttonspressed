@@ -80,20 +80,18 @@ ADMIN_MEDIA_PREFIX = '/media/admin/'
 MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
-MEDIA_GROUPS = {
-    'css': {
-        'main': (
-            'reset.sass',
-            'design.sass',
-            'rest.css',
-            'highlight.css',
-            'project-feed.css',
-        ),
-        'search': (
-            'search-design.css',
-        ),
-    },
-}
+MEDIA_GROUPS = (
+    ('main.css',
+        'reset.sass',
+        'design.sass',
+        'rest.css',
+        'highlight.css',
+        'project-feed.css',
+    ),
+    ('search.css',
+        'search-design.css',
+    ),
+)
 
 YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'yuicompressor.jar')
 if os.path.exists(YUICOMPRESSOR_PATH):
@@ -103,10 +101,11 @@ if os.path.exists(YUICOMPRESSOR_PATH):
     }
 
 MEDIA_DEV_MODE = DEBUG
+PRODUCTION_MEDIA_URL = '/media/'
 if MEDIA_DEV_MODE:
     MEDIA_URL = '/devmedia/'
 else:
-    MEDIA_URL = '/media/'
+    MEDIA_URL = PRODUCTION_MEDIA_URL
 
 GLOBAL_MEDIA_DIRS = (os.path.join(os.path.dirname(__file__), 'media'),)
 
