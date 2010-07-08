@@ -5,6 +5,9 @@ api_version: 1
 
 default_expiration: '365d'
 
+derived_file_type:
+- python_precompiled
+
 handlers:
 - url: /remote_api
   script: $PYTHON_LIB/google/appengine/ext/remote_api/handler.py
