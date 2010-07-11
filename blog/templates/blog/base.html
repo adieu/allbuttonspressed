@@ -26,4 +26,15 @@
 {% endif %}
 {{ block.super }}
 {% show_block 'blogroll' %}
+
+<div class="sidebar-block">
+<h2>Recent posts</h2>
+<ul id="recent-blog-posts">
+  {% for post in recent_posts %}
+    <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></li>
+  {% endfor %}
+</ul>
+
+<a href="{{ blog.get_absolute_url }}">See all...</a>
+</div>
 {% endblock %}

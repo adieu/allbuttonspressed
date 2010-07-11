@@ -20,8 +20,12 @@ def show(request, blog_url, year, month, post_url):
     blog = get_object_or_404(Blog, base_url=blog_url)
     post = get_object_or_404(Post, url=post_url, blog=blog,
         published_on__gte=start, published_on__lt=end)
+
+    recent_posts = Post.objects.filter(blog=blog, published=True)
+    recent_posts = recent_posts.order_by('-published_on')[:10]
+
     return direct_to_template(request, 'blog/post_detail.html',
-        {'post': post, 'blog': blog})
+        {'post': post, 'blog': blog, 'recent_posts': recent_posts})
 
 def browse(request, blog_url):
     blog = get_object_or_404(Blog, base_url=blog_url)
@@ -29,7 +33,7 @@ def browse(request, blog_url):
     query = query.order_by('-published_on')
     # TODO: add select_related('author')
     return object_list(request, query, paginate_by=POSTS_PER_PAGE,
-        extra_context={'blog': blog})
+        extra_context={'blog': blog, 'recent_posts': query[:10]})
 
 def feedburner(feed):
     """Converts a feed into a FeedBurner-aware feed."""

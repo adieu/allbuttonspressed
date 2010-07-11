@@ -6,6 +6,10 @@
 {{ post.rendered_content }}
 
 {% if blog.feedburner_id %}
+<p class="like-it">
+Do you like this post? <a href="http://feeds.feedburner.com/{{ blog.feedburner_id }}" rel="alternate" title="Subscribe to blog" type="application/rss+xml">Subscribe to our blog</a> to receive new posts via RSS or email.
+</p>
+
 <div class="feedflare">
 <script charset="utf-8" type="text/javascript" src="http://feeds.feedburner.com/~s/{{ blog.feedburner_id }}?i={{ site_base_url|urlencode }}{{ post.get_absolute_url|urlencode }}"></script>
 </div>
