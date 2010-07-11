@@ -22,7 +22,7 @@ def show(request, blog_url, year, month, post_url):
         published_on__gte=start, published_on__lt=end)
 
     recent_posts = Post.objects.filter(blog=blog, published=True)
-    recent_posts = recent_posts.order_by('-published_on')[:10]
+    recent_posts = recent_posts.order_by('-published_on')[:6]
 
     return direct_to_template(request, 'blog/post_detail.html',
         {'post': post, 'blog': blog, 'recent_posts': recent_posts})
@@ -33,7 +33,7 @@ def browse(request, blog_url):
     query = query.order_by('-published_on')
     # TODO: add select_related('author')
     return object_list(request, query, paginate_by=POSTS_PER_PAGE,
-        extra_context={'blog': blog, 'recent_posts': query[:10]})
+        extra_context={'blog': blog, 'recent_posts': query[:6]})
 
 def feedburner(feed):
     """Converts a feed into a FeedBurner-aware feed."""
