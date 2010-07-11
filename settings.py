@@ -24,8 +24,8 @@ import os
 #}
 # -----------------
 
-SITE_NAME = 'All buttons pressed'
-SITE_DESCRIPTION = 'Hacking the cloud with Django on non-relational DBs.'
+SITE_NAME = 'All Buttons Pressed'
+SITE_DESCRIPTION = 'Hacking the cloud with Django on non-relational DBs and Python in the browser.'
 SITE_COPYRIGHT = u'Waldemar Kornewald, Thomas Wanschik, Johannes Dörr'
 DISQUS_SHORTNAME = ''
 GOOGLE_ANALYTICS_ID = ''
