@@ -5,6 +5,8 @@ from django.contrib.sitemaps import Sitemap
 from django.db import models
 from django.db.models import permalink
 from minicms.models import BaseContent
+from random import choice
+from string import ascii_letters, digits
 import re
 
 FEEDBURNER_ID = re.compile(r'^http://feeds.feedburner.com/([^/]+)/?$')
@@ -50,6 +52,10 @@ def default_blog():
         return blogs[0]
     return None
 
+def generate_review_key():
+    charset = ascii_letters + digits
+    return ''.join(choice(charset) for i in range(32))
+
 class Post(BaseContent):
     blog = models.ForeignKey(Blog, related_name='posts',
         default=default_blog,
@@ -63,6 +69,8 @@ class Post(BaseContent):
     published_on = models.DateTimeField(null=True, blank=True,
         help_text='Optional (filled automatically when publishing)')
     last_update = models.DateTimeField(auto_now=True)
+    review_key = models.CharField(max_length=32, blank=True,
+        help_text='Optional (filled automatically)')
 
     def __unicode__(self):
         return self.title
@@ -75,6 +83,8 @@ class Post(BaseContent):
                  'month': '%02d' % self.published_on.month})
 
     def save(self, *args, **kwargs):
+        if not self.review_key:
+            self.review_key = generate_review_key()
         if self.published and not self.published_on:
             self.published_on = datetime.now()
         if self.published and not self.url:

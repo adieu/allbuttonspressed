@@ -13,7 +13,7 @@ class PostAdmin(admin.ModelAdmin):
         }),
         ('Advanced options', {
             'classes': ('collapse',),
-            'fields': ('author', 'url', 'published_on'),
+            'fields': ('author', 'url', 'published_on', 'review_key'),
         }),
     )
     list_display = ('title', 'author', 'published_on', 'published')

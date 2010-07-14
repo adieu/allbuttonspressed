@@ -11,21 +11,32 @@ from django.views.generic.simple import direct_to_template
 POSTS_PER_PAGE = 8
 TWEETMEME_FEED_BUTTON = '<a href="http://api.tweetmeme.com/share?url=%(url)s" style="float: left; margin-right: 10px;"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
 
+def review(request, blog_url, review_key):
+    blog = get_object_or_404(Blog, base_url=blog_url)
+    post = get_object_or_404(Post, review_key=review_key)
+    return show_post(request, blog, post, review=True)
+
 def show(request, blog_url, year, month, post_url):
     try:
         start = datetime(int(year), int(month), 1)
-        end = datetime(int(year), int(month)+1, 1)
+        if month == 12:
+            end = datetime(int(year)+1, 1, 1)
+        else:
+            end = datetime(int(year), int(month)+1, 1)
     except ValueError:
         raise Http404('Date format incorrect')
     blog = get_object_or_404(Blog, base_url=blog_url)
     post = get_object_or_404(Post, url=post_url, blog=blog,
         published_on__gte=start, published_on__lt=end)
+    return show_post(request, blog, post, review=False)
 
+def show_post(request, blog, post, review=False):
     recent_posts = Post.objects.filter(blog=blog, published=True)
     recent_posts = recent_posts.order_by('-published_on')[:6]
 
     return direct_to_template(request, 'blog/post_detail.html',
-        {'post': post, 'blog': blog, 'recent_posts': recent_posts})
+        {'post': post, 'blog': blog, 'recent_posts': recent_posts,
+         'review': review})
 
 def browse(request, blog_url):
     blog = get_object_or_404(Blog, base_url=blog_url)
