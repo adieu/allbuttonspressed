@@ -2,12 +2,6 @@ indexes:
 
 - kind: blog_post
   properties:
-  - name: published
-  - name: published_on
-    direction: desc
-
-- kind: blog_post
-  properties:
   - name: blog_id
   - name: published
   - name: published_on
@@ -16,6 +10,7 @@ indexes:
 - kind: blog_post
   properties:
   - name: blog_id
+  - name: published
   - name: url
   - name: published_on
 

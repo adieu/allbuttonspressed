@@ -26,7 +26,7 @@ def show(request, blog_url, year, month, post_url):
     except ValueError:
         raise Http404('Date format incorrect')
     blog = get_object_or_404(Blog, base_url=blog_url)
-    post = get_object_or_404(Post, url=post_url, blog=blog,
+    post = get_object_or_404(Post, url=post_url, blog=blog, published=True,
         published_on__gte=start, published_on__lt=end)
     return show_post(request, blog, post, review=False)
 
