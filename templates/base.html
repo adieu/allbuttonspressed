@@ -9,15 +9,13 @@
   {% load cms blog %}
   <head>
     <title>{% if request.path != '/' %}{% block title %}{% endblock %} - {% endif %}{{ site_name }}</title>
-    {% blog_feeds %}
-
+    {% block blogfeeds %}
+      {% blog_feeds %}
+    {% endblock %}
     {% block css %}
       {% include_media 'main.css' %}
     {% endblock %}
-
-    {% block preload_js %}
-    {% endblock %}
-
+    {% block preload_js %}{% endblock %}
     {% block extra-head %}{% endblock %}
     <meta name="google-site-verification" content="NrOmvnSeEOkEb-yroqOh1Q3JFvjC4XFVVZ27Rb-HrYQ" />
   </head>

@@ -12,12 +12,12 @@ import re
 FEEDBURNER_ID = re.compile(r'^http://feeds.feedburner.com/([^/]+)/?$')
 
 class Blog(models.Model):
+    title = models.CharField(max_length=200,
+        help_text='This will also be your feed title')
     base_url = models.CharField('Base URL', max_length=200,
         help_text='Example: With base URL "personal" your blog posts would '
                   'be below /blog/personal/...<br />'
                   'Slashes ("/") are not allowed in this field.')
-    title = models.CharField(max_length=200,
-        help_text='This will also be your feed title')
     description = models.CharField(max_length=500, blank=True,
         help_text='This will also be your feed description')
     feed_redirect_url = models.URLField('Feed redirect URL',
