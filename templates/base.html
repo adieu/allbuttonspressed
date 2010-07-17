@@ -15,7 +15,25 @@
     {% block css %}
       {% include_media 'main.css' %}
     {% endblock %}
-    {% block preload_js %}{% endblock %}
+
+    {% block preload_js %}
+      {% if google_analytics_id %}
+        <script type="text/javascript">
+        /* <![CDATA[ */
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', '{{ google_analytics_id|escapejs }}']);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
+        /* ]]> */
+        </script>
+      {% endif %}
+    {% endblock %}
+
     {% block extra-head %}{% endblock %}
     <meta name="google-site-verification" content="NrOmvnSeEOkEb-yroqOh1Q3JFvjC4XFVVZ27Rb-HrYQ" />
   </head>
@@ -81,20 +99,5 @@
 
     {% block js %}
     {% endblock %}
-
-    {% if google_analytics_id %}
-      <script type="text/javascript">
-      /* <![CDATA[ */
-      var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-      document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-      /* ]]> */
-      </script>
-      <script type="text/javascript">
-      /* <![CDATA[ */try {
-      var pageTracker = _gat._getTracker("{{ google_analytics_id|escapejs }}");
-      pageTracker._trackPageview();
-      } catch(err) {}/* ]]> */</script>
-
-    {% endif %}
   </body>
 </html>
