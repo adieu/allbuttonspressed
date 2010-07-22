@@ -17,9 +17,11 @@ urlpatterns = patterns('',
 )
 
 if settings.MEDIA_DEV_MODE:
+    # Generate media on-the-fly
     from mediagenerator.urls import urlpatterns as mediaurls
     urlpatterns += mediaurls
 elif settings.DEBUG:
+    # Emulate production server (serve _generated_media folder)
     path = os.path.join(os.path.dirname(__file__), '_generated_media')
     urlpatterns += patterns('',
         (r'^%s(?P<path>.*)$' % re.escape(settings.MEDIA_URL),
