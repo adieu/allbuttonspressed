@@ -76,8 +76,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 USE_I18N = False
 
-ADMIN_MEDIA_PREFIX = '/media/admin/'
-MEDIA_ROOT = os.path.join(os.path.dirname(__file__), 'media')
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
 MEDIA_GROUPS = (
@@ -95,11 +93,11 @@ MEDIA_GROUPS = (
 
 ROOT_MEDIA_FILTERS = {
     'js': 'mediagenerator.filters.yuicompressor.YUICompressor',
-    'css': ('mediagenerator.filters.cssurl.CSSURL',
-            'mediagenerator.filters.yuicompressor.YUICompressor'),
+    'css': 'mediagenerator.filters.yuicompressor.YUICompressor',
 }
 
-YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'yuicompressor.jar')
+YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                                  'yuicompressor.jar')
 
 MEDIA_DEV_MODE = DEBUG
 PRODUCTION_MEDIA_URL = '/media/'
@@ -109,6 +107,8 @@ else:
     MEDIA_URL = PRODUCTION_MEDIA_URL
 
 GLOBAL_MEDIA_DIRS = (os.path.join(os.path.dirname(__file__), 'media'),)
+
+ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 ROOT_URLCONF = 'urls'
 
