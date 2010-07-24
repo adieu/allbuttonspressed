@@ -11,17 +11,21 @@
   <div class="post post-in-list">
     {% include 'blog/post.html' %}
     <div class="post-footer">
-      Posted by {{ post.author.get_full_name }} on {{ post.published_on|date }} | <a href="{{ post.get_absolute_url }}#disqus_thread">Comments</a>
+      <a href="{{ post.get_absolute_url }}">Continue reading &raquo;</a>
+      |
+      Posted on {{ post.published_on|date }}
+      |
+      <a href="{{ post.get_absolute_url }}#disqus_thread">Comments</a>
     </div>
   </div>
 {% endfor %}
 
 <div class="pagenav">
   {% if has_next %}
-    <a href="{{ request.path }}?page={{ next }}">&lt;-older</a>
+    <a href="{{ request.path }}?page={{ next }}">&laquo; older</a>
   {% endif %}
   {% if has_previous %}
-    <a href="{{ request.path }}{% if previous != 1 %}?page={{ previous }}{% endif %}">newer->&gt;</a>
+    <a href="{{ request.path }}{% if previous != 1 %}?page={{ previous }}{% endif %}">newer &raquo;</a>
   {% endif %}
 </div>
 

@@ -44,7 +44,8 @@ def browse(request, blog_url):
     query = query.order_by('-published_on')
     # TODO: add select_related('author')
     return object_list(request, query, paginate_by=POSTS_PER_PAGE,
-        extra_context={'blog': blog, 'recent_posts': query[:6]})
+        extra_context={'blog': blog, 'recent_posts': query[:6],
+                       'browse_posts': True})
 
 def feedburner(feed):
     """Converts a feed into a FeedBurner-aware feed."""
