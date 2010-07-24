@@ -59,6 +59,8 @@ INSTALLED_APPS = (
 if has_djangoappengine:
     INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
 
+TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'djangotoolbox.middleware.RedirectMiddleware',
