@@ -80,7 +80,7 @@ USE_I18N = False
 
 TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
-MEDIA_GROUPS = (
+MEDIA_BUNDLES = (
     ('main.css',
         'reset.sass',
         'design.sass',
