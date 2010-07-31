@@ -82,7 +82,6 @@ TEMPLATE_DIRS = (os.path.join(os.path.dirname(__file__), 'templates'),)
 
 MEDIA_BUNDLES = (
     ('main.css',
-        'reset.sass',
         'design.sass',
         'rest.css',
         'highlight.css',
