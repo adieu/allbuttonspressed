@@ -107,7 +107,9 @@ if MEDIA_DEV_MODE:
 else:
     MEDIA_URL = PRODUCTION_MEDIA_URL
 
-GLOBAL_MEDIA_DIRS = (os.path.join(os.path.dirname(__file__), 'media'),)
+GLOBAL_MEDIA_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'media'),
+)
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
 
