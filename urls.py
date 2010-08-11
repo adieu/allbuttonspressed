@@ -1,8 +1,6 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
 from blog.models import PostsSitemap
-import os
-import re
 
 handler500 = 'djangotoolbox.errorviews.server_error'
 
