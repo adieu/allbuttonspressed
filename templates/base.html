@@ -13,6 +13,10 @@
     {% endblock %}
     {% block css %}
       {% include_media 'main.css' %}
+      {% if google_custom_search_id %}
+        <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
+        {% include_media 'search.css' %}
+      {% endif %}
     {% endblock %}
 
     {% block preload_js %}
@@ -54,8 +58,6 @@
               customSearchControl.draw('cse', options);
             }, true);
           </script>
-          <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
-          {% include_media 'search.css' %}
         </div>
       {% endif %}
       <ul class="menu">
