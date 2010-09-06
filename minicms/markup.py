@@ -1,6 +1,14 @@
-from . import markup_highlight, feed
-from docutils import core, io
+from django.conf import settings
+from django.utils.importlib import import_module
+from docutils import core
 import os
+
+REST_BACKENDS = getattr(settings, 'REST_BACKENDS', (
+    'minicms.markup_highlight',
+))
+
+for name in REST_BACKENDS:
+    import_module(name)
 
 TEMPLATE = os.path.join(os.path.dirname(__file__), 'template.txt')
 

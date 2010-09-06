@@ -61,6 +61,12 @@ if has_djangoappengine:
 
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
+REST_BACKENDS = (
+    'minicms.markup_highlight',
+    'blog.markup_posts',
+    'blog.feed',
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'djangotoolbox.middleware.RedirectMiddleware',
@@ -86,8 +92,6 @@ MEDIA_BUNDLES = (
         'rest.css',
         'highlight.css',
         'project-feed.css',
-    ),
-    ('search.css',
         'search-design.css',
     ),
 )

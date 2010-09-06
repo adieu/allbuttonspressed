@@ -12,11 +12,10 @@
       {% blog_feeds %}
     {% endblock %}
     {% block css %}
-      {% include_media 'main.css' %}
       {% if google_custom_search_id %}
         <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
-        {% include_media 'search.css' %}
       {% endif %}
+      {% include_media 'main.css' %}
     {% endblock %}
 
     {% block preload_js %}

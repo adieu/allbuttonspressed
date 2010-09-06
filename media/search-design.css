@@ -12,9 +12,10 @@ input.gsc-input {
   border-color: #F0EDDE;
 }
 
-input.gsc-search-button {
+.cse input.gsc-search-button, input.gsc-search-button {
   border-color: #F0EDDE;
   background-color: #F0EDDE;
+  padding: 3px 8px;
 }
 
 .gsc-tabHeader.gsc-tabhInactive {

@@ -36,11 +36,7 @@
 
 <div id="recent-blog-posts" class="sidebar-block">
 <h2>Recent posts</h2>
-<ul>
-  {% for post in recent_posts %}
-    <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></li>
-  {% endfor %}
-</ul>
+{% include 'blog/recent_posts.html' %}
 
 <a href="{{ blog.get_absolute_url }}">Browse all posts &raquo;</a>
 </div>
