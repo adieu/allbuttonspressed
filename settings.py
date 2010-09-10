@@ -119,6 +119,15 @@ ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 ROOT_URLCONF = 'urls'
 
+# Activate django-dbindexer if available
+try:
+    import dbindexer
+    DATABASES['native'] = DATABASES['default']
+    DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native'}
+    INSTALLED_APPS += ('dbindexer',)
+except ImportError:
+    pass
+
 try:
     from settings_local import *
 except ImportError:
