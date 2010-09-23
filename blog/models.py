@@ -99,3 +99,5 @@ class PostsSitemap(Sitemap):
 
     def lastmod(self, obj):
         return obj.last_update
+
+from . import posts_page_dependency
