@@ -77,7 +77,7 @@ MIDDLEWARE_CLASSES = (
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.core.context_processors.auth',
+    'django.contrib.auth.context_processors.auth',
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'minicms.context_processors.cms',
@@ -108,12 +108,12 @@ YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)),
 MEDIA_DEV_MODE = DEBUG
 PRODUCTION_MEDIA_URL = '/media/'
 if MEDIA_DEV_MODE:
-    MEDIA_URL = '/devmedia/'
+    STATICFILES_URL = '/devmedia/'
 else:
-    MEDIA_URL = PRODUCTION_MEDIA_URL
+    STATICFILES_URL = PRODUCTION_MEDIA_URL
 
-GLOBAL_MEDIA_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'media'),
+STATICFILES_DIRS = (
+    os.path.join(os.path.dirname(__file__), 'static'),
 )
 
 ADMIN_MEDIA_PREFIX = '/media/admin/'
