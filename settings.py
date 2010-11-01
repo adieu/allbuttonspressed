@@ -106,11 +106,8 @@ YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)),
                                   'yuicompressor.jar')
 
 MEDIA_DEV_MODE = DEBUG
+DEV_MEDIA_URL = '/devmedia/'
 PRODUCTION_MEDIA_URL = '/media/'
-if MEDIA_DEV_MODE:
-    DEV_MEDIA_URL = '/devmedia/'
-else:
-    DEV_MEDIA_URL = PRODUCTION_MEDIA_URL
 
 GLOBAL_MEDIA_DIRS = (
     os.path.join(os.path.dirname(__file__), 'static'),
