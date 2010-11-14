@@ -1,12 +1,13 @@
 from .models import Blog, Post
 from django.contrib import admin
+from minicms.admin import BaseAdmin
 
-class BlogAdmin(admin.ModelAdmin):
+class BlogAdmin(BaseAdmin):
     list_display = ('title', 'base_url')
     search_fields = ('base_url',)
     ordering = ('base_url',)
 
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(BaseAdmin):
     fieldsets = (
         (None, {
             'fields': ('title', 'blog', 'content', 'published'),
