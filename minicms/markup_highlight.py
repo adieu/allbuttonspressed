@@ -34,7 +34,6 @@
     :copyright: Copyright 2006-2010 by the Pygments team, see AUTHORS.
     :license: BSD, see LICENSE for details.
 """
-
 # Options
 # ~~~~~~~
 
@@ -56,7 +55,7 @@ from docutils import nodes
 from docutils.parsers.rst import directives, Directive
 
 from pygments import highlight
-from pygments.lexers import get_lexer_by_name, TextLexer
+from pygments.lexers import get_lexer_by_name
 
 class Pygments(Directive):
     """ Source code syntax hightlighting.
@@ -73,10 +72,12 @@ class Pygments(Directive):
             lexer = get_lexer_by_name(self.arguments[0])
         except ValueError:
             # no lexer found - use the text one instead of an exception
+            from pygments.lexers.special import TextLexer
             lexer = TextLexer()
         # take an arbitrary option if more than one is given
         formatter = self.options and VARIANTS[self.options.keys()[0]] or DEFAULT
         parsed = highlight(u'\n'.join(self.content), lexer, formatter)
         return [nodes.raw('', parsed, format='html')]
 
-directives.register_directive('sourcecode', Pygments)
+def register():
+    directives.register_directive('sourcecode', Pygments)

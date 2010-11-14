@@ -8,7 +8,7 @@ REST_BACKENDS = getattr(settings, 'REST_BACKENDS', (
 ))
 
 for name in REST_BACKENDS:
-    import_module(name)
+    import_module(name).register()
 
 TEMPLATE = os.path.join(os.path.dirname(__file__), 'template.txt')
 

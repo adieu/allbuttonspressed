@@ -1,7 +1,14 @@
 from .models import Post
 from django.db import models
 from django.db.models.signals import pre_save, post_save
-from django.dispatch import receiver
+try:
+    from django.dispatch import receiver
+except ImportError:
+    def receiver(signal, **kwargs):
+        def _decorator(func):
+            signal.connect(func, **kwargs)
+            return func
+        return _decorator
 from minicms.models import Page
 
 # Handle dependency on blog posts by updating the respective page

@@ -81,4 +81,5 @@ class Feed(Directive):
         feed_node = nodes.raw('', code, format='html')
         return [feed_node]
 
-directives.register_directive('feed', Feed)
+def register():
+    directives.register_directive('feed', Feed)
