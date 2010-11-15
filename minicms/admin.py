@@ -6,7 +6,7 @@ from django.db import models
 # The default TextField doesn't have enough rows
 class UsableTextarea(AdminTextareaWidget):
     def __init__(self, attrs=None):
-        default_attrs = {'rows': '40'}
+        default_attrs = {'rows': '32'}
         if attrs:
             default_attrs.update(attrs)
         super(UsableTextarea, self).__init__(default_attrs)
