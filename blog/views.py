@@ -5,11 +5,12 @@ from django.contrib.syndication.views import Feed
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.feedgenerator import Atom1Feed
+from django.utils.http import urlquote_plus
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
 POSTS_PER_PAGE = 8
-TWEETMEME_FEED_BUTTON = '<a href="http://api.tweetmeme.com/share?url=%(url)s" style="float: left; margin-right: 10px;"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
+TWITTER_FEED_BUTTON = '<a href="http://twitter.com/share?url=%(url)s&text=%(text)s%(optvia)s" style="float: left; margin-right: 10px;"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
 
 def review(request, blog_url, review_key):
     blog = get_object_or_404(Blog, base_url=blog_url)
@@ -80,7 +81,15 @@ class LatestEntriesFeed(Feed):
         url = 'http%s://%s%s' % ('s' if self._request.is_secure() else '',
                                  self._request.get_host(),
                                  post.get_absolute_url())
-        header = TWEETMEME_FEED_BUTTON % {'url': url}
+        data = {'url': url, 'text': post.title, 'optvia': ''}
+        twitter_username = getattr(settings, 'TWITTER_USERNAME', None)
+        if twitter_username:
+            data['optvia'] = twitter_username
+        for key in data:
+            data[key] = urlquote_plus(data[key])
+        if twitter_username:
+            data['optvia'] = '&via=' + data['optvia']
+        header = TWITTER_FEED_BUTTON % data
         return header + post.rendered_content
 
     def item_author_name(self, post):
