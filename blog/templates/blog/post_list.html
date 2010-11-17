@@ -11,9 +11,9 @@
   <div class="post post-in-list">
     {% include 'blog/post.html' %}
     <div class="post-footer">
-      <a href="{{ post.get_absolute_url }}">Continue reading &raquo;</a>
+      <a href="{{ post.get_absolute_url }}">Continue &raquo;</a>
       |
-      Posted on {{ post.published_on|date }}
+      By {{ post.author.get_full_name }} on {{ post.published_on|date }}
       |
       <a href="{{ post.get_absolute_url }}#disqus_thread">Comments</a>
     </div>

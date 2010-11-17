@@ -1,5 +1,14 @@
 <h1><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h1>
-<a href="http://twitter.com/share?url={{ site_base_url|urlencode }}{{ post.get_absolute_url|urlencode }}&count=vertical&text={{ post.title|urlencode }}{% if twitter_username %}&via={{ twitter_username|urlencode }}{% endif %}" class="twitter-share-button">Tweet</a>
+{% if not browse_posts %}
+<div class="author">
+By <strong>{{ post.author.get_full_name }}</strong> on <strong>{{ post.published_on|date }}</strong>
+<a href="{{ post.get_absolute_url }}#disqus_thread">Comments</a>
+</div>
+{% endif %}
+
+<a href="http://twitter.com/share?url={{ site_base_url|urlencode }}{{ post.get_absolute_url|urlencode }}&amp;count=vertical&amp;text={{ post.title|urlencode }}{% if twitter_username %}&amp;via={{ twitter_username|urlencode }}{% endif %}" class="twitter-share-button">Tweet</a>
+<iframe src="http://www.facebook.com/plugins/like.php?href={{ site_base_url|urlencode }}{{ post.get_absolute_url|urlencode }}&amp;layout=standard&amp;show_faces=false&amp;width=280&amp;action=like&amp;colorscheme=light" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:280px; height: 30px; align: left; margin: 0px 0px 0px 0px"></iframe>
+
 {% if browse_posts %}
 {{ post.rendered_content|truncatewords_html:150 }}
 {% else %}

@@ -13,7 +13,7 @@
 
 {% if blog.feedburner_id %}
 <p class="like-it">
-Do you like this post? <a href="http://feeds.feedburner.com/{{ blog.feedburner_id }}" rel="alternate" title="Subscribe to blog" type="application/rss+xml">Subscribe to our blog</a> to receive new posts via RSS or email.
+Do you like this post? Subscribe to receive new posts via RSS or email. <a class="join-button" href="http://feeds.feedburner.com/{{ blog.feedburner_id }}" rel="alternate" title="Receive updates" type="application/rss+xml">Join!</a>
 </p>
 
 <div class="feedflare">
@@ -23,12 +23,17 @@ Do you like this post? <a href="http://feeds.feedburner.com/{{ blog.feedburner_i
 
 <div class="post-footer">
 {% block post-footer %}
-Posted by {{ post.author.get_full_name }} on {{ post.published_on|date }}
+By {{ post.author.get_full_name }} on {{ post.published_on|date }}
 |
 <a href="{{ blog.get_absolute_url }}">Browse all posts &raquo;</a>
 {% endblock %}
 </div>
 
+{% disqus_num_replies %}
 {% disqus_show_comments %}
+
+<div class="finished-reading">
+<strong>Finished reading?</strong> <a href="{{ blog.get_absolute_url }}">Browse all posts &raquo;</a>
+</div>
 </div>
 {% endblock %}

@@ -10,7 +10,7 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
 POSTS_PER_PAGE = 8
-TWITTER_FEED_BUTTON = '<a href="http://twitter.com/share?url=%(url)s&text=%(text)s%(optvia)s" style="float: left; margin-right: 10px;"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
+TWITTER_FEED_BUTTON = '<a href="http://twitter.com/share?url=%(url)s&amp;text=%(text)s%(optvia)s" style="float: left; margin-right: 10px;"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
 
 def review(request, blog_url, review_key):
     blog = get_object_or_404(Blog, base_url=blog_url)
@@ -88,7 +88,7 @@ class LatestEntriesFeed(Feed):
         for key in data:
             data[key] = urlquote_plus(data[key])
         if twitter_username:
-            data['optvia'] = '&via=' + data['optvia']
+            data['optvia'] = '&amp;via=' + data['optvia']
         header = TWITTER_FEED_BUTTON % data
         return header + post.rendered_content
 
