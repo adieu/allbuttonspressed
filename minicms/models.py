@@ -40,6 +40,7 @@ class BaseContent(models.Model):
 
 class Page(BaseContent):
     url = models.CharField('URL', max_length=200)
+    show_share_buttons = models.BooleanField(default=True)
 
     def __unicode__(self):
         return u"%s -- %s" % (self.url, self.title)

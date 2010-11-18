@@ -17,8 +17,8 @@ class BaseAdmin(admin.ModelAdmin):
     }
 
 class PageAdmin(BaseAdmin):
-    fields = ('url', 'title', 'content')
-    list_display = ('url', 'title')
+    fields = ('url', 'title', 'content', 'show_share_buttons')
+    list_display = ('url', 'title', 'show_share_buttons')
     search_fields = ('url',)
     ordering = ('url',)
 
