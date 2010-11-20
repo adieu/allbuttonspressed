@@ -10,7 +10,13 @@ from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
 
 POSTS_PER_PAGE = 8
-TWITTER_FEED_BUTTON = '<a href="http://twitter.com/share?url=%(url)s&amp;text=%(text)s%(optvia)s" style="float: left; margin-right: 10px;"><img src="http://api.tweetmeme.com/imagebutton.gif?url=%(url)s" height="61" width="51" /></a>'
+
+TWITTER_FEED_BUTTON = """
+<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(text)s&amp;url=%(url)s%(optvia)s" style="float: left; width: 110px; height: 20px; margin-right: 10px;" frameborder="0" scrolling="no"></iframe>
+"""
+FACEBOOK_LIKE_BUTTON = """
+<iframe src="http://www.facebook.com/plugins/like.php?href=%(url)s&amp;layout=standard&amp;show_faces=false&amp;width=280&amp;action=like&amp;colorscheme=light" frameborder="0" scrolling="no" style="border:none; overflow:hidden; width:280px; height: 30px; align: left; margin: 0px 0px 0px 0px;"></iframe>
+"""
 
 def review(request, blog_url, review_key):
     blog = get_object_or_404(Blog, base_url=blog_url)
@@ -90,7 +96,9 @@ class LatestEntriesFeed(Feed):
         if twitter_username:
             data['optvia'] = '&amp;via=' + data['optvia']
         header = TWITTER_FEED_BUTTON % data
-        return header + post.rendered_content
+        header += FACEBOOK_LIKE_BUTTON % data
+        footer = '<p><a href="%s#disqus_thread">Leave a comment</a></p>' % url
+        return header + post.rendered_content + footer
 
     def item_author_name(self, post):
         return post.author.get_full_name()
