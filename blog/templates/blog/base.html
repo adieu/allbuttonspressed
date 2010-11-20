@@ -4,11 +4,6 @@
 
 {% block blogfeeds %}{% blog_feed blog %}{% endblock %}
 
-{% block js %}
-<script src="http://platform.twitter.com/widgets.js" type="text/javascript"></script>
-{{ block.super }}
-{% endblock js %}
-
 {% block sidebar %}
 {% if blog.feedburner_id %}
 <div class="sidebar-block">
