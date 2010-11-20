@@ -15,6 +15,11 @@ handlers:
   static_files: blank.html
   upload: blank.html
 
+- url: /media/tweet-flare.xml
+  static_files: static/tweet-flare.xml
+  upload: static/tweet-flare.xml
+  expiration: '0'
+
 - url: /media/admin
   static_dir: django/contrib/admin/media/
   expiration: '0'
