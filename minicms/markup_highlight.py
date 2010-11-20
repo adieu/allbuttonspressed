@@ -38,12 +38,12 @@
 # ~~~~~~~
 
 # Set to True if you want inline CSS styles instead of classes
-INLINESTYLES = False
+INLINESTYLES = True
 
-from pygments.formatters import HtmlFormatter
+from pygments.formatters.html import HtmlFormatter
 
 # The default formatter
-DEFAULT = HtmlFormatter(noclasses=INLINESTYLES)
+DEFAULT = HtmlFormatter(noclasses=INLINESTYLES, style='trac')
 
 # Add name -> formatter pairs for every variant you want to use
 VARIANTS = {
