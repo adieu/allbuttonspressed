@@ -43,7 +43,7 @@ INLINESTYLES = True
 from pygments.formatters.html import HtmlFormatter
 
 # The default formatter
-DEFAULT = HtmlFormatter(noclasses=INLINESTYLES, style='trac', cssstyles='border: 1px solid #36393D; margin-bottom: 18px; padding: 5px;')
+DEFAULT = HtmlFormatter(noclasses=INLINESTYLES, style='trac', cssstyles='border: 1px solid #36393D; padding: 5px;')
 
 # Add name -> formatter pairs for every variant you want to use
 VARIANTS = {
