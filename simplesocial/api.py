@@ -4,12 +4,15 @@ from django.utils.http import urlquote
 from mediagenerator.utils import media_url
 
 WIDE_TWITTER_BUTTON = """
-<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(title)s&amp;url=%(url)s%(opttwitteruser)s" style="float: left; width: 110px; height: 20px; margin-right: 10px;" frameborder="0" scrolling="no"></iframe>
+<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(title)s&amp;url=%(url)s%(opttwitteruser)s" style="width: 110px; height: 20px;" frameborder="0" scrolling="no"></iframe>
 """
 
 FACEBOOK_LIKE_BUTTON = """
-<iframe src="http://www.facebook.com/plugins/like.php?href=%(url)s&amp;layout=standard&amp;show_faces=false&amp;width=280&amp;action=like&amp;colorscheme=light" frameborder="0" scrolling="no" style="border:none; overflow:hidden; width:280px; height: 30px; align: left; margin: 0px 0px 0px 0px;"></iframe>
+<iframe src="http://www.facebook.com/plugins/like.php?href=%(url)s&amp;layout=button_count&amp;show_faces=false&amp;width=100&amp;height=21&amp;action=like&amp;colorscheme=light" frameborder="0" scrolling="no" style="border: none; overflow: hidden; width: 100px; height: 21px; align: left; margin: 0px 0px 0px 0px;"></iframe>
 """
+
+WIDE_BUTTONS_DIV = '<div class="wide-share-buttons" style="overflow:hidden; margin-bottom: 8px;">%s</div>'
+NARROW_BUTTONS_DIV = '<div class="narrow-share-buttons" style="overflow:hidden">%s</div>'
 
 BASE_BUTTON = '<a class="simplesocial" target="_blank" title="%(title)s" style="margin-right:5px;" href="%(url)s"><img src="%(icon)s" alt="%(title)s" width="32" height="32" /></a>'
 
@@ -36,10 +39,9 @@ SHOW_SOCIAL_BUTTONS = getattr(settings, 'SHOW_SOCIAL_BUTTONS',
     ('Twitter', 'Facebook', 'Email', 'Delicious', 'StumbleUpon',
      'Digg', 'Reddit', 'Technorati'))
 
-WIDE_BUTTONS_DIV = '<div class="wide-share-buttons" style="overflow:hidden">%s</div>'
-NARROW_BUTTONS_DIV = '<div class="narrow-share-buttons" style="overflow:hidden">%s</div>'
-
 def narrow_buttons(request, title, url, buttons=SHOW_SOCIAL_BUTTONS):
+    base_url = 'http%s://%s' % ('s' if request.is_secure() else '',
+                                request.get_host())
     data = _get_url_data(request, title, url)
     code = []
     for name in buttons:
@@ -51,6 +53,8 @@ def narrow_buttons(request, title, url, buttons=SHOW_SOCIAL_BUTTONS):
         icon = escape(button.get('icon',
                                  media_url('simplesocial/icons32/%s.png'
                                            % name.lower())))
+        if not icon.startswith(('http://', 'https://')):
+            icon = base_url + icon
         code.append(BASE_BUTTON % {'title': title, 'url': url, 'icon': icon})
     return NARROW_BUTTONS_DIV % '\n'.join(code)
 

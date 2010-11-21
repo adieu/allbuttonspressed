@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.feedgenerator import Atom1Feed
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
-from simplesocial.api import wide_buttons
+from simplesocial.api import wide_buttons, narrow_buttons
 
 POSTS_PER_PAGE = 8
 
@@ -81,7 +81,7 @@ class LatestEntriesFeed(Feed):
                                  self._request.get_host(),
                                  post.get_absolute_url())
         header = wide_buttons(self._request, post.title, post.get_absolute_url())
-        footer = wide_buttons(self._request, post.title, post.get_absolute_url())
+        footer = narrow_buttons(self._request, post.title, post.get_absolute_url())
         footer += '<p><a href="%s#disqus_thread">Leave a comment</a></p>' % url
         return header + post.rendered_content + footer
 
