@@ -5,18 +5,11 @@ from django.contrib.syndication.views import Feed
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import get_object_or_404
 from django.utils.feedgenerator import Atom1Feed
-from django.utils.http import urlquote_plus
 from django.views.generic.list_detail import object_list
 from django.views.generic.simple import direct_to_template
+from simplesocial.api import wide_buttons
 
 POSTS_PER_PAGE = 8
-
-TWITTER_FEED_BUTTON = """
-<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(text)s&amp;url=%(url)s%(optvia)s" style="float: left; width: 110px; height: 20px; margin-right: 10px;" frameborder="0" scrolling="no"></iframe>
-"""
-FACEBOOK_LIKE_BUTTON = """
-<iframe src="http://www.facebook.com/plugins/like.php?href=%(url)s&amp;layout=standard&amp;show_faces=false&amp;width=280&amp;action=like&amp;colorscheme=light" frameborder="0" scrolling="no" style="border:none; overflow:hidden; width:280px; height: 30px; align: left; margin: 0px 0px 0px 0px;"></iframe>
-"""
 
 def review(request, blog_url, review_key):
     blog = get_object_or_404(Blog, base_url=blog_url)
@@ -87,17 +80,9 @@ class LatestEntriesFeed(Feed):
         url = 'http%s://%s%s' % ('s' if self._request.is_secure() else '',
                                  self._request.get_host(),
                                  post.get_absolute_url())
-        data = {'url': url, 'text': post.title, 'optvia': ''}
-        twitter_username = getattr(settings, 'TWITTER_USERNAME', None)
-        if twitter_username:
-            data['optvia'] = twitter_username
-        for key in data:
-            data[key] = urlquote_plus(data[key])
-        if twitter_username:
-            data['optvia'] = '&amp;via=' + data['optvia']
-        header = TWITTER_FEED_BUTTON % data
-        header += FACEBOOK_LIKE_BUTTON % data
-        footer = '<p><a href="%s#disqus_thread">Leave a comment</a></p>' % url
+        header = wide_buttons(self._request, post.title, post.get_absolute_url())
+        footer = wide_buttons(self._request, post.title, post.get_absolute_url())
+        footer += '<p><a href="%s#disqus_thread">Leave a comment</a></p>' % url
         return header + post.rendered_content + footer
 
     def item_author_name(self, post):

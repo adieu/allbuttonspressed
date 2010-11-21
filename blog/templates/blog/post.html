@@ -1,3 +1,4 @@
+{% load simplesocial %}
 <h1><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h1>
 {% if not browse_posts %}
 <div class="author">
@@ -6,8 +7,7 @@ By <strong>{{ post.author.get_full_name }}</strong> on <strong>{{ post.published
 </div>
 {% endif %}
 
-<iframe class="twitter-share-button twitter-count-horizontal" src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text={{ post.title|urlencode }}&amp;url={{ site_base_url|urlencode }}{{ post.get_absolute_url|urlencode }}{% if twitter_username %}&amp;via={{ twitter_username|urlencode }}{% endif %}" frameborder="0" scrolling="no"></iframe>
-<iframe class="facebook-like-button" src="http://www.facebook.com/plugins/like.php?href={{ site_base_url|urlencode }}{{ post.get_absolute_url|urlencode }}&amp;layout=standard&amp;show_faces=false&amp;width=280&amp;action=like&amp;colorscheme=light" frameborder="0" scrolling="no"></iframe>
+{% wide_social_buttons request post.title post.get_absolute_url %}
 
 {% if browse_posts %}
 {{ post.rendered_content|truncatewords_html:150 }}

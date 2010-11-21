@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load simplesocial %}
 {% block title %}{{ page.title }}{% endblock %}
 
 {% block extra-head %}
@@ -10,8 +11,9 @@
 {% if request.path != '/' %}<h1>{{ page.title }}</h1>{% endif %}
 
 {% if page.show_share_buttons %}
-<iframe class="twitter-share-button twitter-count-horizontal" src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text={{ page.title|urlencode }}%20-%20{{ site_name|urlencode }}&amp;url={{ site_base_url|urlencode }}{{ page.get_absolute_url|urlencode }}{% if twitter_username %}&amp;via={{ twitter_username|urlencode }}{% endif %}" frameborder="0" scrolling="no"></iframe>
-<iframe class="facebook-like-button" src="http://www.facebook.com/plugins/like.php?href={{ site_base_url|urlencode }}{{ page.get_absolute_url|urlencode }}&amp;layout=standard&amp;show_faces=false&amp;width=280&amp;action=like&amp;colorscheme=light" frameborder="0" scrolling="no"></iframe>
+{% with page.title|add:' - '|add:site_name as title %}
+{% wide_social_buttons request title page.get_absolute_url %}
+{% endwith %}
 {% endif %}
 
 {{ page.rendered_content }}

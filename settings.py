@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'disqus',
     'djangotoolbox',
     'mediagenerator',
+    'simplesocial',
 )
 
 if has_djangoappengine:
