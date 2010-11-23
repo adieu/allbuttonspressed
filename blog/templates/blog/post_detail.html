@@ -9,6 +9,9 @@
 
 {% block content %}
 <div class="post post-detail">
+{% if review %}
+<div class="info"><strong>Review mode: Don't tweet this!!!</strong></div>
+{% endif %}
 {% include 'blog/post.html' %}
 
 <div class="like-it">

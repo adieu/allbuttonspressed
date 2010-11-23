@@ -77,6 +77,10 @@ class Post(BaseContent):
 
     @permalink
     def get_absolute_url(self):
+        if not self.published:
+            return ('blog.views.review', (),
+                    {'review_key': self.review_key,
+                     'blog_url': self.blog.base_url})
         return ('blog.views.show', (),
                 {'post_url': self.url, 'blog_url': self.blog.base_url,
                  'year': self.published_on.year,
