@@ -17,4 +17,10 @@
 {% endif %}
 
 {{ page.rendered_content }}
+
+{% if page.show_share_buttons %}
+{% with page.title|add:' - '|add:site_name as title %}
+{% narrow_social_buttons request title page.get_absolute_url %}
+{% endwith %}
+{% endif %}
 {% endblock %}
