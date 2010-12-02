@@ -17,12 +17,14 @@ def review(request, blog_url, review_key):
     return show_post(request, blog, post, review=True)
 
 def show(request, blog_url, year, month, post_url):
+    year = int(year)
+    month = int(month)
     try:
-        start = datetime(int(year), int(month), 1)
+        start = datetime(year, month, 1)
         if month == 12:
-            end = datetime(int(year)+1, 1, 1)
+            end = datetime(year + 1, 1, 1)
         else:
-            end = datetime(int(year), int(month)+1, 1)
+            end = datetime(year, month + 1, 1)
     except ValueError:
         raise Http404('Date format incorrect')
     blog = get_object_or_404(Blog, base_url=blog_url)
