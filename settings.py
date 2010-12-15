@@ -117,6 +117,8 @@ ADMIN_MEDIA_PREFIX = '/media/admin/'
 
 ROOT_URLCONF = 'urls'
 
+NON_REDIRECTED_PATHS = ('/admin/',)
+
 # Activate django-dbindexer if available
 try:
     import dbindexer
