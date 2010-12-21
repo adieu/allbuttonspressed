@@ -58,7 +58,8 @@ INSTALLED_APPS = (
 )
 
 if has_djangoappengine:
-    INSTALLED_APPS = ('djangoappengine',) + INSTALLED_APPS
+    # djangoappengine should come last, so it can override a few manage.py commands
+    INSTALLED_APPS += ('djangoappengine',)
 
 TEST_RUNNER = 'djangotoolbox.test.CapturingTestSuiteRunner'
 
