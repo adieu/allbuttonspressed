@@ -126,6 +126,8 @@ try:
     DATABASES['native'] = DATABASES['default']
     DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native'}
     INSTALLED_APPS += ('dbindexer',)
+    MIDDLEWARE_CLASSES = ('dbindexer.middleware.DBIndexerMiddleware',) + \
+                         MIDDLEWARE_CLASSES
 except ImportError:
     pass
 
