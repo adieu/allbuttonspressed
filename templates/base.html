@@ -7,7 +7,7 @@
     xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
     lang="{% firstof LANGUAGE_CODE 'en' %}">
   <head>
-    <title>{% if request.path != '/' %}{% block title %}{% endblock %} - {% endif %}{{ site_name }}</title>
+    <title>{% block title %}{% endblock %} - {{ site_name }}</title>
     {% block blogfeeds %}
       {% blog_feeds %}
     {% endblock %}

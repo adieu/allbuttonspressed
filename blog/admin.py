@@ -10,7 +10,7 @@ class BlogAdmin(BaseAdmin):
 class PostAdmin(BaseAdmin):
     fieldsets = (
         (None, {
-            'fields': ('title', 'blog', 'content', 'published'),
+            'fields': ('title', 'keywords', 'blog', 'content', 'published'),
         }),
         ('Advanced options', {
             'classes': ('collapse',),

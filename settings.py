@@ -24,9 +24,9 @@ import os
 #}
 # -----------------
 
-SITE_NAME = 'All Buttons Pressed'
-SITE_DESCRIPTION = 'Hacking the cloud with Django on non-relational DBs and Python in the browser.'
-SITE_COPYRIGHT = u'Waldemar Kornewald, Thomas Wanschik, Johannes Dörr'
+SITE_NAME = 'My site'
+SITE_DESCRIPTION = ''
+SITE_COPYRIGHT = ''
 DISQUS_SHORTNAME = ''
 GOOGLE_ANALYTICS_ID = ''
 # Get the ID from the CSE "Basics" control panel ("Search engine unique ID")

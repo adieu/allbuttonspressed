@@ -1,5 +1,6 @@
 {% extends 'blog/base.html' %}
 {% load disqus_tags %}
+{% block title %}{{ block.super }}{% if blog.keywords.strip %} - {{ blog.keywords.strip }}{% endif %}{% endblock %}
 
 {% block extra-head %}
 {{ block.super }}

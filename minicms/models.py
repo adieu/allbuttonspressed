@@ -21,6 +21,9 @@ class BaseContent(models.Model):
                   'See the <a href="'
                   'http://docutils.sourceforge.net/docs/user/rst/quickref.html'
                   '" target="_blank">quick reference</a> for more details.')
+    keywords = models.CharField(max_length=200, blank=True,
+        help_text='Optional: Add a short extra description for the title tag '
+                  '(for SEO-purposes).')
     # This stores the generated HTML code from our wiki syntax
     pre_rendered_content = models.TextField(blank=True, editable=False)
 
@@ -40,7 +43,8 @@ class BaseContent(models.Model):
 
 class Page(BaseContent):
     url = models.CharField('URL', max_length=200)
-    show_share_buttons = models.BooleanField(default=True)
+    show_share_buttons = models.BooleanField(default=True,
+        help_text='Show buttons for sharing this page on Twitter, Facebook, etc.')
 
     def __unicode__(self):
         return u"%s -- %s" % (self.url, self.title)
