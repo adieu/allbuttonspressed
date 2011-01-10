@@ -41,6 +41,8 @@ def show_post(request, blog, post, review=False):
          'review': review})
 
 def browse(request, blog_url):
+    if request.GET.get('page') == '1':
+        return HttpResponseRedirect(request.path)
     blog = get_object_or_404(Blog, base_url=blog_url)
     query = Post.objects.filter(blog=blog, published=True)
     query = query.order_by('-published_on')

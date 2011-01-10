@@ -4,7 +4,9 @@
 
 {% block extra-head %}
 {{ block.super }}
+{% if page_obj.number == 1 %}
 <meta name="description" content="{{ blog.description|striptags|truncatewords:20 }}" />
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -22,11 +24,11 @@
 {% endfor %}
 
 <div class="pagenav">
-  {% if has_next %}
-    <a href="{{ request.path }}?page={{ next }}">&laquo; older</a>
+  {% if page_obj.has_next %}
+    <a href="{{ request.path }}?page={{ page_obj.next_page_number }}">&laquo; older</a>
   {% endif %}
-  {% if has_previous %}
-    <a href="{{ request.path }}{% if previous != 1 %}?page={{ previous }}{% endif %}">newer &raquo;</a>
+  {% if page_obj.has_previous %}
+    <a href="{{ request.path }}{% if page_obj.previous_page_number != 1 %}?page={{ page_obj.previous_page_number }}{% endif %}">newer &raquo;</a>
   {% endif %}
 </div>
 
