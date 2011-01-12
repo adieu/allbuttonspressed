@@ -1,3 +1,4 @@
+from django.contrib.sitemaps import Sitemap
 from django.db import models
 
 class BaseContent(models.Model):
@@ -26,6 +27,7 @@ class BaseContent(models.Model):
                   '(for SEO-purposes).')
     # This stores the generated HTML code from our wiki syntax
     pre_rendered_content = models.TextField(blank=True, editable=False)
+    last_update = models.DateTimeField(auto_now=True)
 
     @property
     def rendered_content(self):
@@ -58,3 +60,12 @@ class Block(models.Model):
 
     def __unicode__(self):
         return self.name
+
+class PagesSitemap(Sitemap):
+    changefreq = "daily"
+
+    def items(self):
+        return Page.objects.all()[:2000]
+
+    def lastmod(self, obj):
+        return obj.last_update

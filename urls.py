@@ -1,10 +1,12 @@
 from django.conf.urls.defaults import *
 from blog.models import PostsSitemap
+from minicms.models import PagesSitemap
 
 handler500 = 'djangotoolbox.errorviews.server_error'
 
 sitemaps = {
-    'tag': PostsSitemap,
+    'posts': PostsSitemap,
+    'pages': PagesSitemap,
 }
 
 urlpatterns = patterns('',

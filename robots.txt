@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: http://www.allbuttonspressed.com/sitemap.xml
+Sitemap: /sitemap.xml

@@ -71,7 +71,6 @@ class Post(BaseContent):
         help_text='Optional (filled automatically when publishing)')
     published_on = models.DateTimeField(null=True, blank=True,
         help_text='Optional (filled automatically when publishing)')
-    last_update = models.DateTimeField(auto_now=True)
     review_key = models.CharField(max_length=32, blank=True,
         help_text='Optional (filled automatically when saving)')
 
