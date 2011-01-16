@@ -14,4 +14,5 @@ urlpatterns = patterns('',
     (r'^admin/', include('urlsadmin')),
     (r'^blog/', include('blog.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps': sitemaps}),
+    (r'^robots\.txt$', 'robots.views.robots'),
 )
