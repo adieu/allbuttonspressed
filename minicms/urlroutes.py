@@ -5,6 +5,6 @@ from urlrouter.base import URLHandler
 class PageRoutes(URLHandler):
     model = Page
 
-    def show(request, page):
+    def show(self, request, page):
         return direct_to_template(request, 'minicms/page_detail.html',
             {'page': page})
