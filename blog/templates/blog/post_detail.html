@@ -1,10 +1,13 @@
 {% extends 'blog/base.html' %}
 {% load disqus_tags media simplesocial %}
-{% block title %}{{ post.title }}{% if post.keywords.strip %} - {{ post.keywords.strip }}{% endif %} - {{ block.super }}{% endblock %}
+{% block title %}{{ post.title }} - {{ block.super }}{% endblock %}
 
 {% block extra-head %}
 {{ block.super }}
 <meta name="description" content="{{ post.rendered_content|striptags|truncatewords:20 }}" />
+{% if review %}
+<meta name="robots" content="noindex, noarchive" />
+{% endif %}
 {% endblock %}
 
 {% block content %}

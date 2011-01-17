@@ -11,39 +11,20 @@ from simplesocial.api import wide_buttons, narrow_buttons
 
 POSTS_PER_PAGE = 8
 
-def review(request, blog_url, review_key):
-    blog = get_object_or_404(Blog, base_url=blog_url)
+def review(request, review_key):
     post = get_object_or_404(Post, review_key=review_key)
-    return show_post(request, blog, post, review=True)
+    return show_post(request, post, review=True)
 
-def show(request, blog_url, year, month, post_url):
-    year = int(year)
-    month = int(month)
-    try:
-        start = datetime(year, month, 1)
-        if month == 12:
-            end = datetime(year + 1, 1, 1)
-        else:
-            end = datetime(year, month + 1, 1)
-    except ValueError:
-        raise Http404('Date format incorrect')
-    blog = get_object_or_404(Blog, base_url=blog_url)
-    post = get_object_or_404(Post, url=post_url, blog=blog, published=True,
-        published_on__gte=start, published_on__lt=end)
-    return show_post(request, blog, post, review=False)
-
-def show_post(request, blog, post, review=False):
-    recent_posts = Post.objects.filter(blog=blog, published=True)
+def show_post(request, post, review=False):
+    recent_posts = Post.objects.filter(blog=post.blog, published=True)
     recent_posts = recent_posts.order_by('-published_on')[:6]
-
     return direct_to_template(request, 'blog/post_detail.html',
-        {'post': post, 'blog': blog, 'recent_posts': recent_posts,
+        {'post': post, 'blog': post.blog, 'recent_posts': recent_posts,
          'review': review})
 
-def browse(request, blog_url):
+def browse(request, blog):
     if request.GET.get('page') == '1':
         return HttpResponseRedirect(request.path)
-    blog = get_object_or_404(Blog, base_url=blog_url)
     query = Post.objects.filter(blog=blog, published=True)
     query = query.order_by('-published_on')
     # TODO: add select_related('author')
@@ -53,8 +34,7 @@ def browse(request, blog_url):
 
 def feedburner(feed):
     """Converts a feed into a FeedBurner-aware feed."""
-    def _feed(request, blog_url):
-        blog = get_object_or_404(Blog, base_url=blog_url)
+    def _feed(request, blog):
         if not blog.feed_redirect_url or \
                 request.META['HTTP_USER_AGENT'].startswith('FeedBurner') or \
                 request.GET.get('override-redirect') == '1':

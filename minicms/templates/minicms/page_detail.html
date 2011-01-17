@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load simplesocial %}
-{% block title %}{% if request.path != '/' %}{{ page.title }}{% endif %}{% if page.keywords.strip %}{% if request.path != '/' %} - {% endif %}{{ page.keywords.strip }}{% endif %}{% endblock %}
+{% block title %}{{ page.title }}{% endblock %}
 
 {% block extra-head %}
 {{ block.super }}

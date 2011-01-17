@@ -47,8 +47,10 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.sessions',
     'django.contrib.contenttypes',
+    'django.contrib.redirects',
     'django.contrib.sites',
     'django.contrib.sitemaps',
+    'urlrouter',
     'minicms',
     'blog',
     'disqus',
@@ -76,7 +78,14 @@ MIDDLEWARE_CLASSES = (
     'djangotoolbox.middleware.RedirectMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'minicms.middleware.CMSFallbackMiddleware',
+    'urlrouter.middleware.URLRouterFallbackMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+)
+
+URL_ROUTE_HANDLERS = (
+    'minicms.urlroutes.PageRoutes',
+    'blog.urlroutes.BlogRoutes',
+    'blog.urlroutes.BlogPostRoutes',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

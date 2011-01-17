@@ -1,11 +1,12 @@
+from . import api
 from .views import show
-from django.http import Http404, HttpResponseRedirect
 from django.conf import settings
+from django.http import Http404
 
-class CMSFallbackMiddleware(object):
+class URLRouterFallbackMiddleware(object):
     def process_response(self, request, response):
         if response.status_code != 404:
-            return response # No need to check for a flatpage for non-404 responses.
+            return response # Pass through non-404 responses
         try:
             return show(request, request.path_info)
         # Return the original response if any errors happened. Because this

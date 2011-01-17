@@ -3,18 +3,18 @@ from django.contrib import admin
 from minicms.admin import BaseAdmin
 
 class BlogAdmin(BaseAdmin):
-    list_display = ('title', 'base_url')
-    search_fields = ('base_url',)
-    ordering = ('base_url',)
+    list_display = ('title', 'url')
+    search_fields = ('url',)
+    ordering = ('url',)
 
 class PostAdmin(BaseAdmin):
     fieldsets = (
         (None, {
-            'fields': ('title', 'keywords', 'blog', 'content', 'published'),
+            'fields': ('title', 'url', 'blog', 'content', 'published'),
         }),
         ('Advanced options', {
             'classes': ('collapse',),
-            'fields': ('author', 'url', 'published_on', 'review_key'),
+            'fields': ('author', 'published_on', 'review_key'),
         }),
     )
     list_display = ('title', 'author', 'published_on', 'published')
