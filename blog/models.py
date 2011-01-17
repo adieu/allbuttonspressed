@@ -68,8 +68,9 @@ class Post(BaseContent):
     author = models.ForeignKey(User, related_name='posts', null=True, blank=True,
         help_text='Optional (filled automatically when saving)')
     url = models.CharField('URL', blank=True, max_length=200,
-        help_text='Optional (filled automatically when publishing). '
-                  'Better use a hand-optimized URL that is unique and SEO-friendly.')
+        help_text='Optional (filled automatically when publishing). Better '
+                  'use a hand-optimized URL that is unique and SEO-friendly.<br/>'
+                  "Tip: Relative URLs will be prefixed with the Blog's URL.")
     published_on = models.DateTimeField(null=True, blank=True,
         help_text='Optional (filled automatically when publishing)')
     review_key = models.CharField(max_length=32, blank=True,
