@@ -48,6 +48,7 @@ class RouteTests(TestCase):
         b.save()
         a.url, b.url = b.url, a.url
         a.save()
+        self.assertEqual(URLRoute.objects.count(), 1)
         b.save()
         self.assertEqual(URLRoute.objects.count(), 2)
         aroute = URLRoute.objects.get(url='/bla2')
