@@ -5,6 +5,7 @@ from datetime import datetime
 from blog.models import Blog, Post
 from minicms.models import Page
 from django.db import models
+from redirects.models import Redirect
 
 def migrate_v2():
     # Run this *before* deployment
@@ -28,3 +29,19 @@ def migrate_v3():
     Page._meta.get_field('last_update').auto_now = False
     for page in Page.objects.all():
         page.save()
+
+class DjangoRedirect(models.Model):
+    __module__ = 'redirects.models'
+
+    old_path = models.CharField(max_length=200)
+    new_path = models.CharField(max_length=200, blank=True)
+
+    class Meta:
+        db_table = 'django_redirect'
+
+    def __unicode__(self):
+        return "%s ---> %s" % (self.old_path, self.new_path)
+
+def migrate_redirects():
+    for redirect in DjangoRedirect.objects.all():
+        Redirect(redirect_from=redirect.old_path, redirect_to=redirect.new_path).save()
