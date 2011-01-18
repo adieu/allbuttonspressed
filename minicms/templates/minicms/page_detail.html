@@ -11,7 +11,7 @@
 {% if request.path != '/' %}<h1>{{ page.title }}</h1>{% endif %}
 
 {% if page.show_share_buttons %}
-{% with page.title|add:' - '|add:site_name as title %}
+{% with page.title|add:' | '|add:site_name as title %}
 {% wide_social_buttons request title page.get_absolute_url %}
 {% endwith %}
 {% endif %}
@@ -19,7 +19,7 @@
 {{ page.rendered_content }}
 
 {% if page.show_share_buttons %}
-{% with page.title|add:' - '|add:site_name as title %}
+{% with page.title|add:' | '|add:site_name as title %}
 {% narrow_social_buttons request title page.get_absolute_url %}
 {% endwith %}
 {% endif %}
