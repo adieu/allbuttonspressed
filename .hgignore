@@ -16,6 +16,7 @@ djangoappengine
 django
 django_mongodb_engine
 djangotoolbox
+dbindexer
 mediagenerator
 pyjs
 pymeta
