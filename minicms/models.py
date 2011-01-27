@@ -44,6 +44,7 @@ class Page(BaseContent):
     url = models.CharField('URL', max_length=200)
     show_share_buttons = models.BooleanField(default=True,
         help_text='Show buttons for sharing this page on Twitter, Facebook, etc.')
+    published = models.BooleanField(default=True)
 
     def __unicode__(self):
         return u"%s -- %s" % (self.url, self.title)
@@ -62,7 +63,7 @@ class PagesSitemap(Sitemap):
     changefreq = "daily"
 
     def items(self):
-        return Page.objects.all()[:2000]
+        return Page.objects.filter(published=True)[:2000]
 
     def lastmod(self, obj):
         return obj.last_update

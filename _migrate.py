@@ -30,6 +30,13 @@ def migrate_v3():
     for page in Page.objects.all():
         page.save()
 
+def migrate_v4():
+    # Added "published" field
+    Page._meta.get_field('last_update').auto_now = False
+    for page in Page.objects.all():
+        page.published = True
+        page.save()
+
 class DjangoRedirect(models.Model):
     __module__ = 'redirects.models'
 
