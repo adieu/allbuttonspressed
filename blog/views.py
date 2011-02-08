@@ -49,7 +49,7 @@ class LatestEntriesFeed(Feed):
         return blog
 
     def title(self, blog):
-        return '%s - %s' % (blog.title, settings.SITE_NAME)
+        return '%s | %s' % (blog.title, settings.SITE_NAME)
 
     def link(self, blog):
         return blog.get_absolute_url()
