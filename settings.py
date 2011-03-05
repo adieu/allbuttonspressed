@@ -2,6 +2,7 @@
 try:
     from djangoappengine.settings_base import *
     has_djangoappengine = True
+    DATABASES['default']['HIGH_REPLICATION'] = True
 except ImportError:
     has_djangoappengine = False
     DEBUG = True
