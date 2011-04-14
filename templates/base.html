@@ -12,9 +12,6 @@
       {% blog_feeds %}
     {% endblock %}
     {% block css %}
-      {% if google_custom_search_id %}
-        <link rel="stylesheet" type="text/css" href="http://www.google.com/cse/style/look/greensky.css" />
-      {% endif %}
       {% include_media 'main.css' %}
     {% endblock %}
 
@@ -43,20 +40,13 @@
     <div id="header">
       <a id="logo" href="/"><img alt="All Buttons Pressed" src="http://lh5.ggpht.com/_8v0Ka-uUQOY/S7yqfkqywAI/AAAAAAAAAFk/2yLtGysnSiU/logo%20%282%29.png" /></a>
       {% if google_custom_search_id %}
-        <div id="search">
-          <div id="cse-search-form">Loading...</div>
-          <script src="http://www.google.com/jsapi" type="text/javascript"></script>
-          <script type="text/javascript">
-            google.load('search', '1', {language : 'en'});
-            google.setOnLoadCallback(function(){
-              var customSearchControl = new google.search.CustomSearchControl('{{ google_custom_search_id|escapejs }}');
-              customSearchControl.setResultSetSize(google.search.Search.FILTERED_CSE_RESULTSET);
-              var options = new google.search.DrawOptions();
-              options.setSearchFormRoot('cse-search-form');
-              customSearchControl.draw('cse', options);
-            }, true);
-          </script>
-        </div>
+        <form id="search-form" action="/search">
+          <input type="hidden" value="{{ google_custom_search_id }}" name="cx" />
+          <input type="hidden" value="FORID:9" name="cof" />
+          <input type="text" id="search-field" name="q" size="10" />
+          <input type="submit" id="search-button" name="sa" value="Search" />
+        </form>
+        <script type="text/javascript" src="http://www.google.com/cse/brand?form=search-form"></script>
       {% endif %}
       <ul class="menu">
         {% show_menu %}
