@@ -1,7 +1,7 @@
 <!DOCTYPE html 
      PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-{% load media cms blog %}
+{% load media cms blog google_cse google_analytics %}
 <html xmlns="http://www.w3.org/1999/xhtml"
     dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
     xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
@@ -16,21 +16,7 @@
     {% endblock %}
 
     {% block preload_js %}
-      {% if google_analytics_id %}
-        <script type="text/javascript">
-        /* <![CDATA[ */
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', '{{ google_analytics_id|escapejs }}']);
-        _gaq.push(['_trackPageview']);
-
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-        /* ]]> */
-        </script>
-      {% endif %}
+      {% google_analytics_code %}
     {% endblock %}
 
     {% block extra-head %}{% endblock %}
@@ -39,15 +25,7 @@
   <body>
     <div id="header">
       <a id="logo" href="/"><img alt="All Buttons Pressed" src="http://lh5.ggpht.com/_8v0Ka-uUQOY/S7yqfkqywAI/AAAAAAAAAFk/2yLtGysnSiU/logo%20%282%29.png" /></a>
-      {% if google_custom_search_id %}
-        <form id="search-form" action="/search">
-          <input type="hidden" value="{{ google_custom_search_id }}" name="cx" />
-          <input type="hidden" value="FORID:9" name="cof" />
-          <input type="text" id="search-field" name="q" size="10" />
-          <input type="submit" id="search-button" name="sa" value="Search" />
-        </form>
-        <script type="text/javascript" src="http://www.google.com/cse/brand?form=search-form"></script>
-      {% endif %}
+      {% google_search_form %}
       <ul class="menu">
         {% show_menu %}
       </ul>

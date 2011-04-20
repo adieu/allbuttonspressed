@@ -59,6 +59,8 @@ INSTALLED_APPS = (
     'blog',
     'disqus',
     'djangotoolbox',
+    'google_analytics',
+    'google_cse',
     'mediagenerator',
     'robots',
     'simplesocial',

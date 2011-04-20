@@ -8,7 +8,7 @@ class BlogRoutes(URLHandler):
     def show(self, request, blog):
         if request.path == blog.get_internal_feed_url():
             return latest_entries_feed(request, blog)
-        return browse(request, blog)
+        return browse(request, blog=blog)
 
     def get_urls(self, blog):
         yield blog.get_absolute_url()

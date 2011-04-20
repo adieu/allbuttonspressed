@@ -8,7 +8,12 @@ class URLRouterFallbackMiddleware(object):
         if response.status_code != 404:
             return response # Pass through non-404 responses
         try:
-            return show(request, request.path_info)
+            # TODO/XXX: Workaround for bug in Django. TemplateResponse.render()
+            # isn't called after process_response().
+            new_response = show(request, request.path_info)
+            if hasattr(new_response, 'render') and callable(new_response.render):
+                new_response = new_response.render()
+            return new_response
         # Return the original response if any errors happened. Because this
         # is a middleware, we can't assume the errors will be caught elsewhere.
         except Http404:

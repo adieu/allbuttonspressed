@@ -3,13 +3,10 @@ from datetime import datetime
 from django.conf import settings
 from django.contrib.syndication.views import Feed
 from django.http import HttpResponseRedirect, Http404
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.utils.feedgenerator import Atom1Feed
-from django.views.generic.list_detail import object_list
-from django.views.generic.simple import direct_to_template
+from django.views.generic import ListView
 from simplesocial.api import wide_buttons, narrow_buttons
-
-POSTS_PER_PAGE = 8
 
 def review(request, review_key):
     post = get_object_or_404(Post, review_key=review_key)
@@ -18,19 +15,32 @@ def review(request, review_key):
 def show_post(request, post, review=False):
     recent_posts = Post.objects.filter(blog=post.blog, published=True)
     recent_posts = recent_posts.order_by('-published_on')[:6]
-    return direct_to_template(request, 'blog/post_detail.html',
+    return render(request, 'blog/post_detail.html',
         {'post': post, 'blog': post.blog, 'recent_posts': recent_posts,
          'review': review})
 
-def browse(request, blog):
-    if request.GET.get('page') == '1':
-        return HttpResponseRedirect(request.path)
-    query = Post.objects.filter(blog=blog, published=True)
-    query = query.order_by('-published_on')
-    # TODO: add select_related('author')
-    return object_list(request, query, paginate_by=POSTS_PER_PAGE,
-        extra_context={'blog': blog, 'recent_posts': query[:6],
-                       'browse_posts': True})
+class BrowseView(ListView):
+    paginate_by = 8
+
+    def dispatch(self, request, blog):
+        if request.GET.get('page') == '1':
+            return HttpResponseRedirect(request.path)
+        return super(BrowseView, self).dispatch(request, blog=blog)
+
+    def get_queryset(self):
+        query = Post.objects.filter(blog=self.kwargs['blog'], published=True)
+        # TODO: add select_related('author')
+        return query.order_by('-published_on')
+
+    def get_context_data(self, **kwargs):
+        # Call the base implementation first to get a context
+        context = super(BrowseView, self).get_context_data(**kwargs)
+        context.update({'blog': self.kwargs['blog'],
+                        'recent_posts': self.get_queryset()[:6],
+                        'browse_posts': True})
+        return context
+
+browse = BrowseView.as_view()
 
 def feedburner(feed):
     """Converts a feed into a FeedBurner-aware feed."""

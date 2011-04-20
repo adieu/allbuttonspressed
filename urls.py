@@ -15,7 +15,6 @@ urlpatterns = patterns('',
     (r'^blog/', include('blog.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
         {'sitemaps': sitemaps}),
-    (r'^search$', 'django.views.generic.simple.direct_to_template',
-        {'template': 'search.html'}),
+    (r'^search$', 'google_cse.views.search'),
     (r'^robots\.txt$', 'robots.views.robots'),
 )

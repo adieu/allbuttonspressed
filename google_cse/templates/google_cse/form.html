@@ -1,0 +1,9 @@
+{% if google_custom_search_id %}
+  <form id="search-form" action="/search">
+    <input type="hidden" value="{{ google_custom_search_id }}" name="cx" />
+    <input type="hidden" value="FORID:11" name="cof" />
+    <input type="text" id="search-field" name="q" size="10" />
+    <input type="submit" id="search-button" name="sa" value="Search" />
+  </form>
+  <script type="text/javascript" src="http://www.google.com/cse/brand?form=search-form"></script>
+{% endif %}
