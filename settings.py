@@ -30,7 +30,7 @@ import os
 # Activate django-dbindexer for the default database
 DATABASES['native'] = DATABASES['default']
 DATABASES['default'] = {'ENGINE': 'dbindexer', 'TARGET': 'native'}
-DBINDEXER_SITECONF = 'dbindexes'
+AUTOLOAD_SITECONF = 'dbindexes'
 
 SITE_NAME = 'My site'
 SITE_DESCRIPTION = ''
@@ -65,6 +65,7 @@ INSTALLED_APPS = (
     'robots',
     'simplesocial',
     'redirects',
+    'autoload',
     'dbindexer',
 )
 
@@ -83,7 +84,8 @@ REST_BACKENDS = (
 
 MIDDLEWARE_CLASSES = (
     # This loads the index definitions, so it has to come first
-    'dbindexer.middleware.DBIndexerMiddleware',
+    'autoload.middleware.AutoloadMiddleware',
+
     'mediagenerator.middleware.MediaMiddleware',
 
     'django.middleware.common.CommonMiddleware',

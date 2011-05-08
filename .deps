@@ -3,6 +3,7 @@ django = https://bitbucket.org/wkornewald/django-nonrel
 djangoappengine = https://bitbucket.org/wkornewald/djangoappengine
 djangotoolbox = https://bitbucket.org/wkornewald/djangotoolbox
 django-dbindexer = https://bitbucket.org/wkornewald/django-dbindexer
+django-autoload = https://bitbucket.org/twanschik/django-autoload
 django-mediagenerator = https://bitbucket.org/wkornewald/django-mediagenerator
 
 [links]
