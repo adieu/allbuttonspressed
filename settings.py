@@ -5,8 +5,6 @@
 try:
     from djangoappengine.settings_base import *
     has_djangoappengine = True
-    # TODO: Once App Engine fixes the "s~" prefix mess we can remove this.
-    DATABASES['default']['HIGH_REPLICATION'] = True
 except ImportError:
     has_djangoappengine = False
     DEBUG = True
@@ -121,12 +119,15 @@ MEDIA_BUNDLES = (
 )
 
 ROOT_MEDIA_FILTERS = {
-    'js': 'mediagenerator.filters.yuicompressor.YUICompressor',
+    'js': 'mediagenerator.filters.closure.Closure',
     'css': 'mediagenerator.filters.yuicompressor.YUICompressor',
 }
 
-YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                                  'yuicompressor.jar')
+CLOSURE_COMPILER_PATH = os.path.join(os.path.dirname(__file__),
+                                     '.webutils', 'compiler.jar')
+
+YUICOMPRESSOR_PATH = os.path.join(os.path.dirname(__file__),
+                                  '.webutils', 'yuicompressor.jar')
 
 MEDIA_DEV_MODE = DEBUG
 DEV_MEDIA_URL = '/devmedia/'

@@ -5,6 +5,7 @@ djangotoolbox = https://bitbucket.org/wkornewald/djangotoolbox
 django-dbindexer = https://bitbucket.org/wkornewald/django-dbindexer
 django-autoload = https://bitbucket.org/twanschik/django-autoload
 django-mediagenerator = https://bitbucket.org/wkornewald/django-mediagenerator
+webutils = https://bitbucket.org/wkornewald/webutils
 
 [links]
 django = django/django
@@ -12,3 +13,4 @@ djangoappengine = djangoappengine
 djangotoolbox = djangotoolbox/djangotoolbox
 dbindexer = django-dbindexer/dbindexer
 mediagenerator = django-mediagenerator/mediagenerator
+.webutils = webutils
