@@ -3,7 +3,7 @@ from django.conf import settings
 
 register = template.Library()
 
-SHORTNAME = settings.DISQUS_SHORTNAME
+SHORTNAME = getattr(settings, 'DISQUS_SHORTNAME', None)
 
 def disqus_dev():
     """
@@ -23,6 +23,8 @@ def disqus_num_replies():
     Returns the HTML/js code necessary to display the number of comments
     for a DISQUS thread.
     """
+    if not SHORTNAME:
+        return ''
     return """
     <script type="text/javascript">
     //<![CDATA[
@@ -40,6 +42,8 @@ def disqus_show_comments():
     """
     Returns the HTML code necessary to display DISQUS comments.
     """
+    if not SHORTNAME:
+        return ''
     return """
     <div id="disqus_thread"></div>
     <script type="text/javascript">
@@ -62,6 +66,8 @@ def disqus_recent_comments(num_items=3, avatar_size=32):
     """
     Returns the HTML/js code necessary to display the recent comments widget.
     """
+    if not SHORTNAME:
+        return ''
     return """
     <script type="text/javascript" src="http://disqus.com/forums/%(shortname)s/recent_comments_widget.js?num_items=%(num_items)d&amp;avatar_size=%(avatar_size)d"></script>
     <noscript><p><a href="http://%(shortname)s.disqus.com/?url=ref">View the discussion thread.</a></p></noscript>
@@ -73,6 +79,8 @@ def disqus_popular_threads(num_items=5):
     """
     Returns the HTML/js code necessary to display top commenters
     """
+    if not SHORTNAME:
+        return ''
     return """
     <script type="text/javascript" src="http://disqus.com/forums/%(shortname)s/popular_threads_widget.js?num_items=%(num_items)d"></script>
     """ % dict(shortname=SHORTNAME,
