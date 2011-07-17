@@ -46,7 +46,7 @@ def resave_content():
     for post in Post.objects.all():
         post.save()
     for page in Page.objects.all():
-        post.save()
+        page.save()
 
 class DjangoRedirect(models.Model):
     __module__ = 'redirects.models'
