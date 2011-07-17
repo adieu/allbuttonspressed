@@ -4,11 +4,15 @@ from django.utils.http import urlquote
 from mediagenerator.utils import media_url
 
 WIDE_TWITTER_BUTTON = """
-<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(title)s&amp;url=%(url)s%(opttwitteruser)s" style="width: 110px; height: 20px;" frameborder="0" scrolling="no"></iframe>
+<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(title)s&amp;url=%(url)s%(opttwitteruser)s" style="width: 135px; height: 20px; border: none; overflow: hidden;"></iframe>
 """
 
 FACEBOOK_LIKE_BUTTON = """
-<iframe src="http://www.facebook.com/plugins/like.php?href=%(url)s&amp;layout=button_count&amp;show_faces=false&amp;width=100&amp;height=21&amp;action=like&amp;colorscheme=light" frameborder="0" scrolling="no" style="border: none; overflow: hidden; width: 100px; height: 21px; align: left; margin: 0px 0px 0px 0px;"></iframe>
+<iframe src="http://www.facebook.com/plugins/like.php?href=%(url)s&amp;layout=button_count&amp;show_faces=false&amp;width=100&amp;height=21&amp;action=like&amp;colorscheme=light" style="width: 100px; height: 21px; border: none; overflow: hidden; align: left; margin: 0px 0px 0px 0px;"></iframe>
+"""
+
+PLUS_ONE_BUTTON = """
+<div class="g-plusone" data-size="standard" data-count="true" data-href="%(rawurl)s"></div>
 """
 
 WIDE_BUTTONS_DIV = '<div class="wide-share-buttons" style="overflow:hidden; margin-bottom: 8px;">%s</div>'
@@ -59,7 +63,7 @@ def narrow_buttons(request, title, url, buttons=SHOW_SOCIAL_BUTTONS):
     return NARROW_BUTTONS_DIV % '\n'.join(code)
 
 def wide_buttons(request, title, url,
-                 buttons=(WIDE_TWITTER_BUTTON, FACEBOOK_LIKE_BUTTON)):
+                 buttons=(WIDE_TWITTER_BUTTON, PLUS_ONE_BUTTON, FACEBOOK_LIKE_BUTTON)):
     data = _get_url_data(request, title, url)
     data['opttwitteruser'] = escape(data['opttwitteruser'])
     code = [button % data for button in buttons]
@@ -76,4 +80,5 @@ def _get_url_data(request, title, url):
         data[key] = urlquote(data[key])
     if twitter_username:
         data['opttwitteruser'] = '&via=' + data['opttwitteruser']
+    data['rawurl'] = url
     return data
