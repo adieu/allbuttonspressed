@@ -1,4 +1,4 @@
-# $Id: it.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: it.py 6460 2010-10-29 22:18:44Z milde $
 # Authors: Nicola Larosa <docutils@tekNico.net>;
 #          Lele Gaifax <lele@seldati.it>
 # Copyright: This module has been placed in the public domain.
@@ -44,6 +44,7 @@ directives = {
       'tabella-csv': 'csv-table',
       'tabella-elenco': 'list-table',
       'meta': 'meta',
+      'math (translation required)': 'math',
       #'imagemap': 'imagemap',
       'immagine': 'image',
       'figura': 'figure',
@@ -81,6 +82,7 @@ roles = {
       'enfasi': 'emphasis',
       'forte': 'strong',
       'letterale': 'literal',
+    'math (translation required)': 'math',
       'riferimento-con-nome': 'named-reference',
       'riferimento-anonimo': 'anonymous-reference',
       'riferimento-nota': 'footnote-reference',

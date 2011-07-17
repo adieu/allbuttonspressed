@@ -1,9 +1,9 @@
-# $Id: states.py 6141 2009-09-25 18:50:30Z milde $
+# $Id: states.py 7072 2011-07-06 15:52:30Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
 """
-This is the ``docutils.parsers.restructuredtext.states`` module, the core of
+This is the ``docutils.parsers.rst.states`` module, the core of
 the reStructuredText parser.  It defines the following:
 
 :Classes:
@@ -222,6 +222,11 @@ class RSTState(StateWS):
         self.inliner = memo.inliner
         self.document = memo.document
         self.parent = self.state_machine.node
+        # enable the reporter to determine source and source-line
+        if not hasattr(self.reporter, 'locator'):
+            self.reporter.locator = self.state_machine.get_source_and_line
+            # print "adding locator to reporter", self.state_machine.input_offset
+
 
     def goto_line(self, abs_line_offset):
         """
@@ -238,12 +243,13 @@ class RSTState(StateWS):
 
         This code should never be run.
         """
+        src, srcline = self.state_machine.get_source_and_line()
         self.reporter.severe(
             'Internal error: no transition pattern match.  State: "%s"; '
             'transitions: %s; context: %s; current line: %r.'
             % (self.__class__.__name__, transitions, context,
                self.state_machine.line),
-            line=self.state_machine.abs_line_number())
+            source=src, line=srcline)
         return context, None, []
 
     def bof(self, context):
@@ -364,9 +370,10 @@ class RSTState(StateWS):
             return None
 
     def title_inconsistent(self, sourcetext, lineno):
+        src, srcline = self.state_machine.get_source_and_line(lineno)
         error = self.reporter.severe(
             'Title level inconsistent:', nodes.literal_block('', sourcetext),
-            line=lineno)
+            source=src, line=srcline)
         return error
 
     def new_subsection(self, title, lineno, messages):
@@ -413,7 +420,7 @@ class RSTState(StateWS):
             literalnext = 0
         textnodes, messages = self.inline_text(text, lineno)
         p = nodes.paragraph(data, '', *textnodes)
-        p.line = lineno
+        p.source, p.line = self.state_machine.get_source_and_line(lineno)
         return [p] + messages, literalnext
 
     def inline_text(self, text, lineno):
@@ -423,9 +430,11 @@ class RSTState(StateWS):
         return self.inliner.parse(text, lineno, self.memo, self.parent)
 
     def unindent_warning(self, node_name):
-        return self.reporter.warning(
-            '%s ends without a blank line; unexpected unindent.' % node_name,
-            line=(self.state_machine.abs_line_number() + 1))
+        # the actual problem is one line below the current line
+        src, srcline = self.state_machine.get_source_and_line()
+        return self.reporter.warning('%s ends without a blank line; '
+                                     'unexpected unindent.' % node_name,
+                                     source=src, line=srcline+1)
 
 
 def build_regexp(definition, compile=1):
@@ -530,6 +539,7 @@ class Inliner:
                             re.escape(closers)))
     non_whitespace_before = r'(?<![ \n])'
     non_whitespace_escape_before = r'(?<![ \n\x00])'
+    non_unescaped_whitespace_escape_before = r'(?<!(?<!\x00)[ \n\x00])'
     non_whitespace_after = r'(?![ \n])'
     # Alphanumerics with isolated internal [-._+:] chars (i.e. not 2 together):
     simplename = r'(?:(?!_)\w)+(?:[-._+:](?:(?!_)\w)+)*'
@@ -584,7 +594,7 @@ class Inliner:
                             + r'(\*\*)' + end_string_suffix),
           interpreted_or_phrase_ref=re.compile(
               r"""
-              %(non_whitespace_escape_before)s
+              %(non_unescaped_whitespace_escape_before)s
               (
                 `
                 (?P<suffix>
@@ -1189,6 +1199,9 @@ class Body(RSTState):
         textnodes, messages = self.inline_text(text, lineno)
         node = nodes.attribution(text, '', *textnodes)
         node.line = lineno
+        # report with source and source-line results in
+        # ``IndexError: list index out of range``
+        # node.source, node.line = self.state_machine.get_source_and_line(lineno)
         return node, messages
 
     def bullet(self, match, context, next_state):
@@ -1237,9 +1250,10 @@ class Body(RSTState):
         enumlist['suffix'] = self.enum.formatinfo[format].suffix
         if ordinal != 1:
             enumlist['start'] = ordinal
+            src, srcline = self.state_machine.get_source_and_line()
             msg = self.reporter.info(
                 'Enumerated list start value not ordinal-1: "%s" (ordinal %s)'
-                % (text, ordinal), line=self.state_machine.abs_line_number())
+                % (text, ordinal), source=src, line=srcline)
             self.parent += msg
         listitem, blank_finish = self.list_item(match.end())
         enumlist += listitem
@@ -1397,11 +1411,13 @@ class Body(RSTState):
 
     def field(self, match):
         name = self.parse_field_marker(match)
+        src, srcline = self.state_machine.get_source_and_line()
         lineno = self.state_machine.abs_line_number()
         indented, indent, line_offset, blank_finish = \
               self.state_machine.get_first_known_indented(match.end())
         field_node = nodes.field()
-        field_node.line = lineno
+        field_node.source = src
+        field_node.line = srcline
         name_nodes, name_messages = self.inline_text(name, lineno)
         field_node += nodes.field_name(name, '', *name_nodes)
         field_body = nodes.field_body('\n'.join(indented), *name_messages)
@@ -1424,10 +1440,11 @@ class Body(RSTState):
         optionlist = nodes.option_list()
         try:
             listitem, blank_finish = self.option_list_item(match)
-        except MarkupError, (message, lineno):
+        except MarkupError, error:
             # This shouldn't happen; pattern won't match.
-            msg = self.reporter.error(
-                'Invalid option list marker: %s' % message, line=lineno)
+            src, srcline = self.state_machine.get_source_and_line()
+            msg = self.reporter.error(u'Invalid option list marker: %s' %
+                error, source=src, line=srcline)
             self.parent += msg
             indented, indent, line_offset, blank_finish = \
                   self.state_machine.get_first_known_indented(match.end())
@@ -1504,8 +1521,7 @@ class Body(RSTState):
             else:
                 raise MarkupError(
                     'wrong number of option tokens (=%s), should be 1 or 2: '
-                    '"%s"' % (len(tokens), optionstring),
-                    self.state_machine.abs_line_number() + 1)
+                    '"%s"' % (len(tokens), optionstring))
         return optlist
 
     def doctest(self, match, context, next_state):
@@ -1530,9 +1546,10 @@ class Body(RSTState):
                   blank_finish=0)
             self.goto_line(new_line_offset)
         if not blank_finish:
+            src, srcline = self.state_machine.get_source_and_line()
             self.parent += self.reporter.warning(
                 'Line block ends without a blank line.',
-                line=(self.state_machine.abs_line_number() + 1))
+                source=src, line=srcline+1)
         if len(block):
             if block[0].indent is None:
                 block[0].indent = 0
@@ -1594,9 +1611,10 @@ class Body(RSTState):
         nodelist, blank_finish = self.table(isolate_function, parser_class)
         self.parent += nodelist
         if not blank_finish:
+            src, srcline = self.state_machine.get_source_and_line()
             msg = self.reporter.warning(
                 'Blank line required after table.',
-                line=self.state_machine.abs_line_number() + 1)
+                source=src, line=srcline+1)
             self.parent += msg
         return [], next_state, []
 
@@ -1624,9 +1642,9 @@ class Body(RSTState):
         try:
             block = self.state_machine.get_text_block(flush_left=1)
         except statemachine.UnexpectedIndentationError, instance:
-            block, source, lineno = instance.args
+            block, src, srcline = instance.args
             messages.append(self.reporter.error('Unexpected indentation.',
-                                                source=source, line=lineno))
+                                                source=src, line=srcline))
             blank_finish = 0
         block.disconnect()
         # for East Asian chars:
@@ -1703,11 +1721,12 @@ class Body(RSTState):
         block.replace(self.double_width_pad_char, '')
         data = '\n'.join(block)
         message = 'Malformed table.'
-        lineno = self.state_machine.abs_line_number() - len(block) + 1
+        startline = self.state_machine.abs_line_number() - len(block) + 1
+        src, srcline = self.state_machine.get_source_and_line(startline)
         if detail:
             message += '\n' + detail
         error = self.reporter.error(message, nodes.literal_block(data, data),
-                                    line=lineno)
+                                    source=src, line=srcline)
         return [error]
 
     def build_table(self, tabledata, tableline, stub_columns=0):
@@ -1799,13 +1818,14 @@ class Body(RSTState):
                                   """ % vars(Inliner), re.VERBOSE),)
 
     def footnote(self, match):
-        lineno = self.state_machine.abs_line_number()
+        src, srcline = self.state_machine.get_source_and_line()
         indented, indent, offset, blank_finish = \
               self.state_machine.get_first_known_indented(match.end())
         label = match.group(1)
         name = normalize_name(label)
         footnote = nodes.footnote('\n'.join(indented))
-        footnote.line = lineno
+        footnote.source = src
+        footnote.line = srcline
         if name[0] == '#':              # auto-numbered
             name = name[1:]             # autonumber label
             footnote['auto'] = 1
@@ -1829,13 +1849,14 @@ class Body(RSTState):
         return [footnote], blank_finish
 
     def citation(self, match):
-        lineno = self.state_machine.abs_line_number()
+        src, srcline = self.state_machine.get_source_and_line()
         indented, indent, offset, blank_finish = \
               self.state_machine.get_first_known_indented(match.end())
         label = match.group(1)
         name = normalize_name(label)
         citation = nodes.citation('\n'.join(indented))
-        citation.line = lineno
+        citation.source = src
+        citation.line = srcline
         citation += nodes.label('', label)
         citation['names'].append(name)
         self.document.note_citation(citation)
@@ -1847,6 +1868,7 @@ class Body(RSTState):
     def hyperlink_target(self, match):
         pattern = self.explicit.patterns.target
         lineno = self.state_machine.abs_line_number()
+        src, srcline = self.state_machine.get_source_and_line()
         block, indent, offset, blank_finish = \
               self.state_machine.get_first_known_indented(
               match.end(), until_blank=1, strip_indent=0)
@@ -1862,7 +1884,7 @@ class Body(RSTState):
             try:
                 escaped += block[blockindex]
             except IndexError:
-                raise MarkupError('malformed hyperlink target.', lineno)
+                raise MarkupError('malformed hyperlink target.')
         del block[:blockindex]
         block[0] = (block[0] + ' ')[targetmatch.end()-len(escaped)-1:].strip()
         target = self.make_target(block, blocktext, lineno,
@@ -1929,7 +1951,7 @@ class Body(RSTState):
 
     def substitution_def(self, match):
         pattern = self.explicit.patterns.substitution
-        lineno = self.state_machine.abs_line_number()
+        src, srcline = self.state_machine.get_source_and_line()
         block, indent, offset, blank_finish = \
               self.state_machine.get_first_known_indented(match.end(),
                                                           strip_indent=0)
@@ -1945,8 +1967,7 @@ class Body(RSTState):
             try:
                 escaped = escaped + ' ' + escape2null(block[blockindex].strip())
             except IndexError:
-                raise MarkupError('malformed substitution definition.',
-                                  lineno)
+                raise MarkupError('malformed substitution definition.')
         del block[:blockindex]          # strip out the substitution marker
         block[0] = (block[0].strip() + ' ')[subdefmatch.end()-len(escaped)-1:-1]
         if not block[0]:
@@ -1956,11 +1977,13 @@ class Body(RSTState):
             block.pop()
         subname = subdefmatch.group('name')
         substitution_node = nodes.substitution_definition(blocktext)
-        substitution_node.line = lineno
+        substitution_node.source = src
+        substitution_node.line = srcline
         if not block:
             msg = self.reporter.warning(
                 'Substitution definition "%s" missing contents.' % subname,
-                nodes.literal_block(blocktext, blocktext), line=lineno)
+                nodes.literal_block(blocktext, blocktext),
+                source=src, line=srcline)
             return [msg], blank_finish
         block[0] = block[0].strip()
         substitution_node['names'].append(
@@ -1982,13 +2005,13 @@ class Body(RSTState):
                 msg = self.reporter.error(
                     'Substitution definition contains illegal element:',
                     pformat, nodes.literal_block(blocktext, blocktext),
-                    line=lineno)
+                    source=src, line=srcline)
                 return [msg], blank_finish
         if len(substitution_node) == 0:
             msg = self.reporter.warning(
-                  'Substitution definition "%s" empty or invalid.'
-                  % subname,
-                  nodes.literal_block(blocktext, blocktext), line=lineno)
+                  'Substitution definition "%s" empty or invalid.' % subname,
+                  nodes.literal_block(blocktext, blocktext),
+                  source=src, line=srcline)
             return [msg], blank_finish
         self.document.note_substitution_def(
             substitution_node, subname, self.parent)
@@ -2039,6 +2062,7 @@ class Body(RSTState):
             from docutils.parsers.rst import convert_directive_function
             directive = convert_directive_function(directive)
         lineno = self.state_machine.abs_line_number()
+        src, srcline = self.state_machine.get_source_and_line()
         initial_line_offset = self.state_machine.line_offset
         indented, indent, line_offset, blank_finish \
                   = self.state_machine.get_first_known_indented(match.end(),
@@ -2053,7 +2077,8 @@ class Body(RSTState):
             error = self.reporter.error(
                 'Error in "%s" directive:\n%s.' % (type_name,
                                                    ' '.join(detail.args)),
-                nodes.literal_block(block_text, block_text), line=lineno)
+                nodes.literal_block(block_text, block_text),
+                source=src, line=srcline)
             return [error], blank_finish
         directive_instance = directive(
             type_name, arguments, options, content, lineno,
@@ -2062,9 +2087,8 @@ class Body(RSTState):
             result = directive_instance.run()
         except docutils.parsers.rst.DirectiveError, error:
             msg_node = self.reporter.system_message(error.level, error.msg,
-                                        source=error.source, line=error.line)
+                source=src, line=srcline)
             msg_node += nodes.literal_block(block_text, block_text)
-            msg_node['line'] = lineno
             result = [msg_node]
         assert isinstance(result, list), \
                'Directive "%s" must return a list of nodes.' % type_name
@@ -2087,8 +2111,8 @@ class Body(RSTState):
         if indented and (directive.required_arguments
                          or directive.optional_arguments
                          or option_spec):
-            for i in range(len(indented)):
-                if not indented[i].strip():
+            for i, line in enumerate(indented):
+                if not line.strip():
                     break
             else:
                 i += 1
@@ -2099,18 +2123,19 @@ class Body(RSTState):
             content = indented
             content_offset = line_offset
             arg_block = []
-        while content and not content[0].strip():
-            content.trim_start()
-            content_offset += 1
         if option_spec:
             options, arg_block = self.parse_directive_options(
                 option_presets, option_spec, arg_block)
-            if arg_block and not (directive.required_arguments
-                                  or directive.optional_arguments):
-                raise MarkupError('no arguments permitted; blank line '
-                                  'required before content block')
         else:
             options = {}
+        if arg_block and not (directive.required_arguments
+                              or directive.optional_arguments):
+            content = arg_block + indented[i:]
+            content_offset = line_offset
+            arg_block = []
+        while content and not content[0].strip():
+            content.trim_start()
+            content_offset += 1
         if directive.required_arguments or directive.optional_arguments:
             arguments = self.parse_directive_arguments(
                 directive, arg_block)
@@ -2189,13 +2214,13 @@ class Body(RSTState):
             return 0, 'option data incompletely parsed'
 
     def unknown_directive(self, type_name):
-        lineno = self.state_machine.abs_line_number()
+        src, srcline = self.state_machine.get_source_and_line()
         indented, indent, offset, blank_finish = \
               self.state_machine.get_first_known_indented(0, strip_indent=0)
         text = '\n'.join(indented)
         error = self.reporter.error(
               'Unknown directive type "%s".' % type_name,
-              nodes.literal_block(text, text), line=lineno)
+              nodes.literal_block(text, text), source=src, line=srcline)
         return [error], blank_finish
 
     def comment(self, match):
@@ -2269,8 +2294,10 @@ class Body(RSTState):
                 try:
                     return method(self, expmatch)
                 except MarkupError, error: # never reached?
-                    message, lineno = error.args
-                    errors.append(self.reporter.warning(message, line=lineno))
+                    message = ' '.join(error.args)
+                    src, srcline = self.state_machine.get_source_and_line()
+                    errors.append(self.reporter.warning(
+                                      message, source=src, line=srcline))
                     break
         nodelist, blank_finish = self.comment(match)
         return nodelist + errors, blank_finish
@@ -2493,7 +2520,7 @@ class OptionList(SpecializedBody):
         """Option list item."""
         try:
             option_list_item, blank_finish = self.option_list_item(match)
-        except MarkupError, (message, lineno):
+        except MarkupError:
             self.invalid_input()
         self.parent += option_list_item
         self.blank_finish = blank_finish
@@ -2614,6 +2641,7 @@ class Text(RSTState):
 
     def blank(self, match, context, next_state):
         """End of paragraph."""
+        # NOTE: self.paragraph returns [ node, system_message(s) ], literalnext
         paragraph, literalnext = self.paragraph(
               context, self.state_machine.abs_line_number() - 1)
         self.parent += paragraph
@@ -2646,6 +2674,7 @@ class Text(RSTState):
     def underline(self, match, context, next_state):
         """Section title."""
         lineno = self.state_machine.abs_line_number()
+        src, srcline = self.state_machine.get_source_and_line()
         title = context[0].rstrip()
         underline = match.string.rstrip()
         source = title + '\n' + underline
@@ -2656,20 +2685,22 @@ class Text(RSTState):
                     msg = self.reporter.info(
                         'Possible title underline, too short for the title.\n'
                         "Treating it as ordinary text because it's so short.",
-                        line=lineno)
+                        source=src, line=srcline)
                     self.parent += msg
                 raise statemachine.TransitionCorrection('text')
             else:
                 blocktext = context[0] + '\n' + self.state_machine.line
                 msg = self.reporter.warning(
                     'Title underline too short.',
-                    nodes.literal_block(blocktext, blocktext), line=lineno)
+                    nodes.literal_block(blocktext, blocktext),
+                    source=src, line=srcline)
                 messages.append(msg)
         if not self.state_machine.match_titles:
             blocktext = context[0] + '\n' + self.state_machine.line
             msg = self.reporter.severe(
                 'Unexpected section title.',
-                nodes.literal_block(blocktext, blocktext), line=lineno)
+                nodes.literal_block(blocktext, blocktext),
+                source=src, line=srcline)
             self.parent += messages
             self.parent += msg
             return [], next_state, []
@@ -2685,9 +2716,9 @@ class Text(RSTState):
         try:
             block = self.state_machine.get_text_block(flush_left=1)
         except statemachine.UnexpectedIndentationError, instance:
-            block, source, lineno = instance.args
+            block, src, srcline = instance.args
             msg = self.reporter.error('Unexpected indentation.',
-                                      source=source, line=lineno)
+                                      source=src, line=srcline)
         lines = context + list(block)
         paragraph, literalnext = self.paragraph(lines, startline)
         self.parent += paragraph
@@ -2734,7 +2765,9 @@ class Text(RSTState):
         definitionlistitem = nodes.definition_list_item(
             '\n'.join(termline + list(indented)))
         lineno = self.state_machine.abs_line_number() - 1
-        definitionlistitem.line = lineno
+        src, srcline = self.state_machine.get_source_and_line()
+        definitionlistitem.source = src
+        definitionlistitem.line = srcline - 1
         termlist, messages = self.term(termline, lineno)
         definitionlistitem += termlist
         definition = nodes.definition('', *messages)
@@ -2742,7 +2775,8 @@ class Text(RSTState):
         if termline[0][-2:] == '::':
             definition += self.reporter.info(
                   'Blank line missing before literal block (after the "::")? '
-                  'Interpreted as a definition list item.', line=line_offset+1)
+                  'Interpreted as a definition list item.',
+                  source=src, line=srcline)
         self.nested_parse(indented, input_offset=line_offset, node=definition)
         return definitionlistitem, blank_finish
 
@@ -2761,7 +2795,7 @@ class Text(RSTState):
                 if len(parts) == 1:
                     node_list[-1] += node
                 else:
-                    
+
                     node_list[-1] += nodes.Text(parts[0].rstrip())
                     for part in parts[1:]:
                         classifier_node = nodes.classifier('', part)
@@ -2837,18 +2871,20 @@ class Line(SpecializedText):
 
     def blank(self, match, context, next_state):
         """Transition marker."""
-        lineno = self.state_machine.abs_line_number() - 1
+        src, srcline = self.state_machine.get_source_and_line()
         marker = context[0].strip()
         if len(marker) < 4:
             self.state_correction(context)
         transition = nodes.transition(rawsource=marker)
-        transition.line = lineno
+        transition.source = src
+        transition.line = srcline - 1
         self.parent += transition
         return [], 'Body', []
 
     def text(self, match, context, next_state):
         """Potential over- & underlined title."""
         lineno = self.state_machine.abs_line_number() - 1
+        src, srcline = self.state_machine.get_source_and_line()
         overline = context[0]
         title = match.string
         underline = ''
@@ -2861,7 +2897,8 @@ class Line(SpecializedText):
             else:
                 msg = self.reporter.severe(
                     'Incomplete section title.',
-                    nodes.literal_block(blocktext, blocktext), line=lineno)
+                    nodes.literal_block(blocktext, blocktext),
+                    source=src, line=srcline-1)
                 self.parent += msg
                 return [], 'Body', []
         source = '%s\n%s\n%s' % (overline, title, underline)
@@ -2874,7 +2911,8 @@ class Line(SpecializedText):
             else:
                 msg = self.reporter.severe(
                     'Missing matching underline for section title overline.',
-                    nodes.literal_block(source, source), line=lineno)
+                    nodes.literal_block(source, source),
+                    source=src, line=srcline-1)
                 self.parent += msg
                 return [], 'Body', []
         elif overline != underline:
@@ -2884,7 +2922,8 @@ class Line(SpecializedText):
             else:
                 msg = self.reporter.severe(
                       'Title overline & underline mismatch.',
-                      nodes.literal_block(source, source), line=lineno)
+                      nodes.literal_block(source, source),
+                      source=src, line=srcline-1)
                 self.parent += msg
                 return [], 'Body', []
         title = title.rstrip()
@@ -2896,7 +2935,8 @@ class Line(SpecializedText):
             else:
                 msg = self.reporter.warning(
                       'Title overline too short.',
-                      nodes.literal_block(source, source), line=lineno)
+                      nodes.literal_block(source, source),
+                      source=src, line=srcline-1)
                 messages.append(msg)
         style = (overline[0], underline[0])
         self.eofcheck = 0               # @@@ not sure this is correct
@@ -2910,18 +2950,22 @@ class Line(SpecializedText):
         overline = context[0]
         blocktext = overline + '\n' + self.state_machine.line
         lineno = self.state_machine.abs_line_number() - 1
+        src, srcline = self.state_machine.get_source_and_line()
         if len(overline.rstrip()) < 4:
             self.short_overline(context, blocktext, lineno, 1)
         msg = self.reporter.error(
               'Invalid section title or transition marker.',
-              nodes.literal_block(blocktext, blocktext), line=lineno)
+              nodes.literal_block(blocktext, blocktext),
+              source=src, line=srcline-1)
         self.parent += msg
         return [], 'Body', []
 
     def short_overline(self, context, blocktext, lineno, lines=1):
+        src, srcline = self.state_machine.get_source_and_line(lineno)
         msg = self.reporter.info(
             'Possible incomplete section title.\nTreating the overline as '
-            "ordinary text because it's so short.", line=lineno)
+            "ordinary text because it's so short.",
+                    source=src, line=srcline)
         self.parent += msg
         self.state_correction(context, lines)
 
@@ -2956,14 +3000,18 @@ class QuotedLiteralBlock(RSTState):
 
     def eof(self, context):
         if context:
+            src, srcline = self.state_machine.get_source_and_line(
+                                                        self.initial_lineno)
             text = '\n'.join(context)
             literal_block = nodes.literal_block(text, text)
-            literal_block.line = self.initial_lineno
+            literal_block.source = src
+            literal_block.line = srcline
             self.parent += literal_block
         else:
             self.parent += self.reporter.warning(
                 'Literal block expected; none found.',
                 line=self.state_machine.abs_line_number())
+                # src not available, because statemachine.input_lines is empty
             self.state_machine.previous_line()
         self.parent += self.messages
         return []
@@ -2995,9 +3043,10 @@ class QuotedLiteralBlock(RSTState):
 
     def text(self, match, context, next_state):
         if context:
+            src, srcline = self.state_machine.get_source_and_line()
             self.messages.append(
                 self.reporter.error('Inconsistent literal block quoting.',
-                                    line=self.state_machine.abs_line_number()))
+                                    source=src, line=srcline))
             self.state_machine.previous_line()
         raise EOFError
 

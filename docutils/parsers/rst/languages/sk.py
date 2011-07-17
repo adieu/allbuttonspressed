@@ -1,4 +1,4 @@
-# $Id: sk.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: sk.py 6460 2010-10-29 22:18:44Z milde $
 # Author: Miroslav Vasko <zemiak@zoznam.sk>
 # Copyright: This module has been placed in the public domain.
 
@@ -43,6 +43,7 @@ directives = {
       u'csv-table (translation required)': 'csv-table',
       u'list-table (translation required)': 'list-table',
       u'meta': 'meta',
+      'math (translation required)': 'math',
       #u'imagemap': 'imagemap',
       u'obr\xe1zok': 'image',
       u'tvar': 'figure',
@@ -79,6 +80,7 @@ roles = {
       u'emphasis (translation required)': 'emphasis',
       u'strong (translation required)': 'strong',
       u'literal (translation required)': 'literal',
+    'math (translation required)': 'math',
       u'named-reference (translation required)': 'named-reference',
       u'anonymous-reference (translation required)': 'anonymous-reference',
       u'footnote-reference (translation required)': 'footnote-reference',

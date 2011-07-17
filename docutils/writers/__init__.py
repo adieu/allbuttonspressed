@@ -1,4 +1,4 @@
-# $Id: __init__.py 6111 2009-09-02 21:36:05Z milde $
+# $Id: __init__.py 6433 2010-09-28 08:21:25Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -71,7 +71,8 @@ class Writer(Component):
         """
         self.document = document
         self.language = languages.get_language(
-            document.settings.language_code)
+            document.settings.language_code,
+            document.reporter)
         self.destination = destination
         self.translate()
         output = self.destination.write(self.output)

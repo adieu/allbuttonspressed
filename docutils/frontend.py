@@ -1,4 +1,4 @@
-# $Id: frontend.py 6154 2009-10-05 19:08:10Z milde $
+# $Id: frontend.py 7071 2011-07-05 10:13:46Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -22,6 +22,7 @@ Also exports the following functions:
   `validate_threshold`, `validate_colon_separated_string_list`,
   `validate_dependency_file`.
 * `make_paths_absolute`.
+* SettingSpec manipulation: `filter_settings_spec`.
 """
 
 __docformat__ = 'reStructuredText'
@@ -32,11 +33,12 @@ import sys
 import warnings
 import ConfigParser as CP
 import codecs
+import optparse
+from optparse import SUPPRESS_HELP
 import docutils
 import docutils.utils
 import docutils.nodes
-import optparse
-from optparse import SUPPRESS_HELP
+from docutils.error_reporting import locale_encoding, ErrorOutput
 
 
 def store_multiple(option, opt, value, parser, *args, **kwargs):
@@ -75,12 +77,6 @@ def validate_encoding_error_handler(setting, value, option_parser,
                                     config_parser=None, config_section=None):
     try:
         codecs.lookup_error(value)
-    except AttributeError:    # TODO: remove (only needed prior to Python 2.3)
-        if value not in ('strict', 'ignore', 'replace', 'xmlcharrefreplace'):
-            raise (LookupError(
-                'unknown encoding error handler: "%s" (choices: '
-                '"strict", "ignore", "replace", or "xmlcharrefreplace")' % value),
-                   None, sys.exc_info()[2])
     except LookupError:
         raise (LookupError(
             'unknown encoding error handler: "%s" (choices: '
@@ -200,6 +196,35 @@ def make_paths_absolute(pathdict, keys, base_path=None):
 def make_one_path_absolute(base_path, path):
     return os.path.abspath(os.path.join(base_path, path))
 
+def filter_settings_spec(settings_spec, *exclude, **replace):
+    """Return a copy of `settings_spec` excluding/replacing some settings.
+
+    `settings_spec` is a tuple of configuration settings with a structure
+    described for docutils.SettingsSpec.settings_spec.
+
+    Optional positional arguments are names of to-be-excluded settings.
+    Keyword arguments are option specification replacements.
+    (See the html4strict writer for an example.)
+    """
+    settings = list(settings_spec)
+    # every third item is a sequence of option tuples
+    for i in range(2, len(settings), 3):
+        newopts = []
+        for opt_spec in settings[i]:
+            # opt_spec is ("<help>", [<option strings>], {<keyword args>})
+            opt_name = [opt_string[2:].replace('-', '_')
+                        for opt_string in opt_spec[1]
+                            if opt_string.startswith('--')
+                       ][0]
+            if opt_name in exclude:
+                continue
+            if opt_name in replace.keys():
+                newopts.append(replace[opt_name])
+            else:
+                newopts.append(opt_spec)
+        settings[i] = tuple(newopts)
+    return tuple(settings)
+
 
 class Values(optparse.Values):
 
@@ -251,8 +276,8 @@ class Option(optparse.Option):
                     new_value = self.validator(setting, value, parser)
                 except Exception, error:
                     raise (optparse.OptionValueError(
-                        'Error in option "%s":\n    %s: %s'
-                        % (opt, error.__class__.__name__, error)),
+                        'Error in option "%s":\n    %s'
+                        % (opt, ErrorString(error))),
                            None, sys.exc_info()[2])
                 setattr(values, setting, new_value)
             if self.overrides:
@@ -289,17 +314,10 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
               '0': 0, 'off': 0, 'no': 0, 'false': 0, '': 0}
     """Lookup table for boolean configuration file settings."""
 
-    try:
-        default_error_encoding = sys.stderr.encoding or 'ascii'
-    except AttributeError:
-        default_error_encoding = 'ascii'
+    default_error_encoding = getattr(sys.stderr, 'encoding',
+                                     None) or locale_encoding or 'ascii'
 
-    # TODO: variable no longer needed since 'backslashreplace' is
-    # part of Python >= 2.3 (required since Docutils 0.6)
-    if hasattr(codecs, 'backslashreplace_errors'):
-        default_error_encoding_error_handler = 'backslashreplace'
-    else:
-        default_error_encoding_error_handler = 'replace'
+    default_error_encoding_error_handler = 'backslashreplace'
 
     settings_spec = (
         'General Docutils Options',
@@ -439,7 +457,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           ['--error-encoding-error-handler'],
           {'default': default_error_encoding_error_handler,
            'validator': validate_encoding_error_handler}),
-         ('Specify the language (as 2-letter code).  Default: en.',
+         ('Specify the language (as BCP 47 language tag).  Default: en.',
           ['--language', '-l'], {'dest': 'language_code', 'default': 'en',
                                  'metavar': '<name>'}),
          ('Write output file dependencies to <file>.',
@@ -646,7 +664,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
         raise KeyError('No option with dest == %r.' % dest)
 
 
-class ConfigParser(CP.ConfigParser):
+class ConfigParser(CP.RawConfigParser):
 
     old_settings = {
         'pep_stylesheet': ('pep_html writer', 'stylesheet'),
@@ -668,10 +686,13 @@ Skipping "%s" configuration file.
 """
 
     def __init__(self, *args, **kwargs):
-        CP.ConfigParser.__init__(self, *args, **kwargs)
+        CP.RawConfigParser.__init__(self, *args, **kwargs)
 
         self._files = []
         """List of paths of configuration files read."""
+
+        self._stderr = ErrorOutput()
+        """Wrapper around sys.stderr catching en-/decoding errors"""
 
     def read(self, filenames, option_parser):
         if type(filenames) in (str, unicode):
@@ -683,9 +704,12 @@ Skipping "%s" configuration file.
             except IOError:
                 continue
             try:
-                CP.ConfigParser.readfp(self, fp, filename)
+                if sys.version_info < (3,2):
+                    CP.RawConfigParser.readfp(self, fp, filename)
+                else:
+                    CP.RawConfigParser.read_file(self, fp, filename)
             except UnicodeDecodeError:
-                sys.stderr.write(self.not_utf8_error % (filename, filename))
+                self._stderr.write(self.not_utf8_error % (filename, filename))
                 fp.close()
                 continue
             fp.close()
@@ -724,7 +748,7 @@ Skipping "%s" configuration file.
                 except KeyError:
                     continue
                 if option.validator:
-                    value = self.get(section, setting, raw=1)
+                    value = self.get(section, setting)
                     try:
                         new_value = option.validator(
                             setting, value, option_parser,
@@ -732,9 +756,10 @@ Skipping "%s" configuration file.
                     except Exception, error:
                         raise (ValueError(
                             'Error in config file "%s", section "[%s]":\n'
-                            '    %s: %s\n        %s = %s'
-                            % (filename, section, error.__class__.__name__,
-                               error, setting, value)), None, sys.exc_info()[2])
+                            '    %s\n'
+                            '        %s = %s'
+                            % (filename, section, ErrorString(error),
+                               setting, value)), None, sys.exc_info()[2])
                     self.set(section, setting, new_value)
                 if option.overrides:
                     self.set(section, option.overrides, None)
@@ -753,7 +778,7 @@ Skipping "%s" configuration file.
         section_dict = {}
         if self.has_section(section):
             for option in self.options(section):
-                section_dict[option] = self.get(section, option, raw=1)
+                section_dict[option] = self.get(section, option)
         return section_dict
 
 

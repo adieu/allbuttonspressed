@@ -1,4 +1,4 @@
-# $Id: roles.py 6121 2009-09-10 12:05:04Z milde $
+# $Id: roles.py 6451 2010-10-25 08:02:43Z milde $
 # Author: Edward Loper <edloper@gradient.cis.upenn.edu>
 # Copyright: This module has been placed in the public domain.
 
@@ -314,6 +314,13 @@ raw_role.options = {'format': directives.unchanged}
 
 register_canonical_role('raw', raw_role)
 
+def math_role(role, rawtext, text, lineno, inliner, options={}, content=[]):
+    i = rawtext.find('`')
+    text = rawtext.split('`')[1]
+    node = nodes.math(rawtext, text)
+    return [node], []
+
+register_canonical_role('math', math_role)
 
 ######################################################################
 # Register roles that are currently unimplemented.

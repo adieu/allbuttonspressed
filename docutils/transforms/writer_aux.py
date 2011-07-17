@@ -1,4 +1,4 @@
-# $Id: writer_aux.py 5174 2007-05-31 00:01:52Z wiemann $
+# $Id: writer_aux.py 6433 2010-09-28 08:21:25Z milde $
 # Author: Lea Wiemann <LeWiemann@gmail.com>
 # Copyright: This module has been placed in the public domain.
 
@@ -73,8 +73,8 @@ class Admonitions(Transform):
     default_priority = 920
 
     def apply(self):
-        lcode = self.document.settings.language_code
-        language = languages.get_language(lcode)
+        language = languages.get_language(self.document.settings.language_code,
+                                          self.document.reporter)
         for node in self.document.traverse(nodes.Admonition):
             node_name = node.__class__.__name__
             # Set class, so that we know what node this admonition came from.

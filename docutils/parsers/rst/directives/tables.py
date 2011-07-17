@@ -1,4 +1,4 @@
-# $Id: tables.py 6107 2009-08-31 02:29:08Z goodger $
+# $Id: tables.py 7072 2011-07-06 15:52:30Z milde $
 # Authors: David Goodger <goodger@python.org>; David Priest
 # Copyright: This module has been placed in the public domain.
 
@@ -14,6 +14,7 @@ import os.path
 import csv
 
 from docutils import io, nodes, statemachine, utils
+from docutils.error_reporting import SafeString
 from docutils.utils import SystemMessagePropagation
 from docutils.parsers.rst import Directive
 from docutils.parsers.rst import directives
@@ -25,10 +26,10 @@ class Table(Directive):
     Generic table base class.
     """
 
-    required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = True
-    option_spec = {'class': directives.class_option}
+    option_spec = {'class': directives.class_option,
+                   'name': directives.unchanged}
     has_content = True
 
     def make_title(self):
@@ -129,6 +130,7 @@ class RSTTable(Table):
             return [error]
         table_node = node[0]
         table_node['classes'] += self.options.get('class', [])
+        self.add_name(table_node)
         if title:
             table_node.insert(0, title)
         return [table_node] + messages
@@ -144,6 +146,7 @@ class CSVTable(Table):
                    'url': directives.uri,
                    'encoding': directives.encoding,
                    'class': directives.class_option,
+                   'name': directives.unchanged,
                    # field delimiter char
                    'delim': directives.single_char_or_whitespace_or_unicode,
                    # treat whitespace after delimiter as significant
@@ -229,6 +232,7 @@ class CSVTable(Table):
         table_node = self.state.build_table(table, self.content_offset,
                                             stub_columns)
         table_node['classes'] += self.options.get('class', [])
+        self.add_name(table_node)
         if title:
             table_node.insert(0, title)
         return [table_node] + messages
@@ -274,9 +278,10 @@ class CSVTable(Table):
                 csv_data = csv_file.read().splitlines()
             except IOError, error:
                 severe = self.state_machine.reporter.severe(
-                    'Problems with "%s" directive path:\n%s.'
-                    % (self.name, error), nodes.literal_block(
-                    self.block_text, self.block_text), line=self.lineno)
+                    u'Problems with "%s" directive path:\n%s.'
+                    % (self.name, SafeString(error)),
+                    nodes.literal_block(self.block_text, self.block_text),
+                    line=self.lineno)
                 raise SystemMessagePropagation(severe)
         elif 'url' in self.options:
             # CSV data is from a URL.
@@ -290,7 +295,7 @@ class CSVTable(Table):
             except (urllib2.URLError, IOError, OSError, ValueError), error:
                 severe = self.state_machine.reporter.severe(
                       'Problems with "%s" directive URL "%s":\n%s.'
-                      % (self.name, self.options['url'], error),
+                      % (self.name, self.options['url'], SafeString(error)),
                       nodes.literal_block(self.block_text, self.block_text),
                       line=self.lineno)
                 raise SystemMessagePropagation(severe)
@@ -352,7 +357,8 @@ class ListTable(Table):
     option_spec = {'header-rows': directives.nonnegative_int,
                    'stub-columns': directives.nonnegative_int,
                    'widths': directives.positive_int_list,
-                   'class': directives.class_option}
+                   'class': directives.class_option,
+                   'name': directives.unchanged}
 
     def run(self):
         if not self.content:
@@ -376,6 +382,7 @@ class ListTable(Table):
         table_node = self.build_table_from_list(table_data, col_widths,
                                                 header_rows, stub_columns)
         table_node['classes'] += self.options.get('class', [])
+        self.add_name(table_node)
         if title:
             table_node.insert(0, title)
         return [table_node] + messages

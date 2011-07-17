@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# $Id: ja.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: ja.py 6460 2010-10-29 22:18:44Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -49,6 +49,7 @@ directives = {
     #u'質問': 'questions',
     #u'問答': 'questions',
     #u'faq': 'questions',
+    u'math (translation required)': 'math',
     u'メタ': 'meta',
     #u'イメージマプ': 'imagemap',
     u'イメージ': 'image',
@@ -101,6 +102,7 @@ roles = {
     u'強い': 'strong',
     u'リテラル': 'literal',
     u'整形済み': 'literal',
+    u'math (translation required)': 'math',
     u'名付参照': 'named-reference',
     u'無名参照': 'anonymous-reference',
     u'脚注参照': 'footnote-reference',

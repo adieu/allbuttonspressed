@@ -1,4 +1,4 @@
-# $Id: fr.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: fr.py 6460 2010-10-29 22:18:44Z milde $
 # Authors: David Goodger <goodger@python.org>; William Dode
 # Copyright: This module has been placed in the public domain.
 
@@ -45,6 +45,7 @@ directives = {
       u'csv-table (translation required)': 'csv-table',
       u'list-table (translation required)': 'list-table',
       u'm\u00E9ta': 'meta',
+      'math (translation required)': 'math',
       #u'imagemap (translation required)': 'imagemap',
       u'image': 'image',
       u'figure': 'figure',
@@ -87,6 +88,7 @@ roles = {
       u'emphase': 'emphasis',
       u'fort': 'strong',
       u'litt\u00E9ral': 'literal',
+    'math (translation required)': 'math',
       u'nomm\u00E9e-r\u00E9f\u00E9rence': 'named-reference',
       u'anonyme-r\u00E9f\u00E9rence': 'anonymous-reference',
       u'note-r\u00E9f\u00E9rence': 'footnote-reference',

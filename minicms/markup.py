@@ -47,7 +47,7 @@ def html_parts(input_string, source_path=None, destination_path=None,
     parts = core.publish_parts(
         source=input_string, source_path=source_path,
         destination_path=destination_path,
-        writer_name='html', settings_overrides=overrides)
+        writer_name='cleanhtmlwriter', settings_overrides=overrides)
     return parts
 
 def html_body(input_string, source_path=None, destination_path=None,

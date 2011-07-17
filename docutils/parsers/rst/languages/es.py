@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# $Id: es.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: es.py 6460 2010-10-29 22:18:44Z milde $
 # Author: Marcelo Huerta San Martín <richieadler@users.sourceforge.net>
 # Copyright: This module has been placed in the public domain.
 
@@ -51,6 +51,7 @@ directives = {
       u'tabla-csv': 'csv-table',
       u'tabla-lista': 'list-table',
       u'meta': 'meta',
+      'math (translation required)': 'math',
       #'imagemap': 'imagemap',
       u'imagen': 'image',
       u'figura': 'figure',
@@ -103,6 +104,7 @@ roles = {
     u'\u00e9nfasis': 'emphasis',
     u'destacado': 'strong',
     u'literal': 'literal',              # "literal" is also a word in Spanish :-)
+    u'math (translation required)': 'math',
     u'referencia-con-nombre': 'named-reference',
     u'referencia-anonima': 'anonymous-reference',
     u'referencia-an\u00f3nima': 'anonymous-reference',

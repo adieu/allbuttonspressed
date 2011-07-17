@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 {% load media cms blog google_cse google_analytics %}
-<html xmlns="http://www.w3.org/1999/xhtml"
-    dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
-    xml:lang="{% firstof LANGUAGE_CODE 'en' %}"
-    lang="{% firstof LANGUAGE_CODE 'en' %}">
+<html dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}"
+      lang="{% firstof LANGUAGE_CODE 'en' %}">
   <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>{% block title %}{% endblock %} | {{ site_name }}</title>
     {% block blogfeeds %}
       {% blog_feeds %}

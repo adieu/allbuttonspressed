@@ -1,4 +1,4 @@
-# $Id: af.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: af.py 6460 2010-10-29 22:18:44Z milde $
 # Author: Jannie Hofmeyr <jhsh@sun.ac.za>
 # Copyright: This module has been placed in the public domain.
 
@@ -29,6 +29,7 @@ directives = {
       'kantstreep': 'sidebar',
       'onderwerp': 'topic',
       'lynblok': 'line-block',
+      'math (translation required)': 'math',
       'parsed-literal (translation required)': 'parsed-literal',
       'rubriek': 'rubric',
       'epigraaf': 'epigraph',
@@ -88,6 +89,7 @@ roles = {
     'nadruk': 'emphasis',
     'sterk': 'strong',
     'literal (translation required)': 'literal',
+    'math (translation required)': 'math',
     'benoemde verwysing': 'named-reference',
     'anonieme verwysing': 'anonymous-reference',
     'voetnootverwysing': 'footnote-reference',

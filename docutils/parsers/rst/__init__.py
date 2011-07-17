@@ -1,4 +1,4 @@
-# $Id: __init__.py 6141 2009-09-25 18:50:30Z milde $
+# $Id: __init__.py 7062 2011-06-30 22:14:29Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -169,15 +169,11 @@ class DirectiveError(Exception):
     instead!
     """
 
-    def __init__(self, level, message, source, line):
-        """
-        Initialize with message `message`.  `level` is a system message level.
-        """
+    def __init__(self, level, message):
+        """Set error `message` and `level`"""
         Exception.__init__(self)
         self.level = level
         self.msg = message
-        self.source = source
-        self.line = line
 
 
 class Directive(object):
@@ -235,7 +231,14 @@ class Directive(object):
 
     - ``content`` is a list of strings, the directive content line by line.
 
-    - ``lineno`` is the line number of the first line of the directive.
+    - ``lineno`` is the absolute line number of the first line
+      of the directive.
+
+    - ``src`` is the name (or path) of the rst source of the directive.
+
+    - ``srcline`` is the line number of the first line of the directive
+      in its source. It may differ from ``lineno``, if the main source
+      includes other sources with the ``.. include::`` directive.
 
     - ``content_offset`` is the line offset of the first line of the content from
       the beginning of the current input.  Used when initiating a nested parse.
@@ -297,6 +300,7 @@ class Directive(object):
         self.block_text = block_text
         self.state = state
         self.state_machine = state_machine
+        self.src, self.srcline = state_machine.get_source_and_line(lineno)
 
     def run(self):
         raise NotImplementedError('Must override run() is subclass.')
@@ -315,13 +319,7 @@ class Directive(object):
         You'd often use self.error(message) instead, which will
         generate an ERROR-level directive error.
         """
-        # source = self.state_machine.get_source(self.lineno - 1)
-        try:
-            (source, line) = self.state_machine.input_lines.info(self.lineno)
-        except IndexError:
-            source = self.state_machine.get_source(self.lineno - 1)
-            line = self.lineno
-        return DirectiveError(level, message, source, line)
+        return DirectiveError(level, message)
 
     def debug(self, message):
         return self.directive_error(0, message)
@@ -348,6 +346,18 @@ class Directive(object):
         if not self.content:
             raise self.error('Content block expected for the "%s" directive; '
                              'none found.' % self.name)
+
+    def add_name(self, node):
+        """Append self.options['name'] to node['names'] if it exists.
+
+        Also normalize the name string and register it as explicit target.
+        """
+        if 'name' in self.options:
+            name = nodes.fully_normalize_name(self.options.pop('name'))
+            if 'name' in node:
+                del(node['name'])
+            node['names'].append(name)
+            self.state.document.note_explicit_target(node, node)
 
 
 def convert_directive_function(directive_fn):

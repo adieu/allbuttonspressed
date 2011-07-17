@@ -1,4 +1,4 @@
-# $Id: parts.py 5618 2008-07-28 08:37:32Z strank $
+# $Id: parts.py 7072 2011-07-06 15:52:30Z milde $
 # Authors: David Goodger <goodger@python.org>; Dmitry Jemerov
 # Copyright: This module has been placed in the public domain.
 
@@ -35,7 +35,6 @@ class Contents(Directive):
         else:
             return value
 
-    required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = True
     option_spec = {'depth': directives.nonnegative_int,
@@ -49,7 +48,8 @@ class Contents(Directive):
             raise self.error('The "%s" directive may not be used within '
                              'topics or body elements.' % self.name)
         document = self.state_machine.document
-        language = languages.get_language(document.settings.language_code)
+        language = languages.get_language(document.settings.language_code,
+                                          document.reporter)
         if self.arguments:
             title_text = self.arguments[0]
             text_nodes, messages = self.state.inline_text(title_text,
@@ -63,6 +63,10 @@ class Contents(Directive):
                 title = nodes.title('', language.labels['contents'])
         topic = nodes.topic(classes=['contents'])
         topic['classes'] += self.options.get('class', [])
+        # the latex2e writer needs source and line for a warning:
+        src, srcline = self.state_machine.get_source_and_line()
+        topic.source = src
+        topic.line = srcline - 1
         if 'local' in self.options:
             topic['classes'].append('local')
         if title:

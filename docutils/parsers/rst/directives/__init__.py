@@ -1,4 +1,4 @@
-# $Id: __init__.py 5952 2009-05-19 08:45:27Z milde $
+# $Id: __init__.py 6460 2010-10-29 22:18:44Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -29,6 +29,7 @@ _directive_registry = {
       'topic': ('body', 'Topic'),
       'line-block': ('body', 'LineBlock'),
       'parsed-literal': ('body', 'ParsedLiteral'),
+      'math': ('body', 'MathBlock'),
       'rubric': ('body', 'Rubric'),
       'epigraph': ('body', 'Epigraph'),
       'highlights': ('body', 'Highlights'),

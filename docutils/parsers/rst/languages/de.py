@@ -1,4 +1,4 @@
-# $Id: de.py 5174 2007-05-31 00:01:52Z wiemann $
+# $Id: de.py 6460 2010-10-29 22:18:44Z milde $
 # Authors: Engelbert Gruber <grubert@users.sourceforge.net>;
 #          Lea Wiemann <LeWiemann@gmail.com>
 # Copyright: This module has been placed in the public domain.
@@ -38,11 +38,12 @@ directives = {
       'pull-quote (translation required)': 'pull-quote', # kasten too ?
       'zusammengesetzt': 'compound',
       'verbund': 'compound',
-      u'container (translation required)': 'container',
+      u'container': 'container',
       #'fragen': 'questions',
       'tabelle': 'table',
       'csv-tabelle': 'csv-table',
       'list-table (translation required)': 'list-table',
+      u'mathe': 'math',
       'meta': 'meta',
       #'imagemap': 'imagemap',
       'bild': 'image',
@@ -83,6 +84,7 @@ roles = {
       'betonung': 'emphasis',
       'fett': 'strong',
       u'w\xf6rtlich': 'literal',
+      u'mathe': 'math',
       'benannte-referenz': 'named-reference',
       'unbenannte-referenz': 'anonymous-reference',
       u'fu\xdfnoten-referenz': 'footnote-reference',

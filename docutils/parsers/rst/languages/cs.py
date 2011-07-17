@@ -1,4 +1,4 @@
-# $Id: cs.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: cs.py 6460 2010-10-29 22:18:44Z milde $
 # Author: Marek Blaha <mb@dat.cz>
 # Copyright: This module has been placed in the public domain.
 
@@ -43,6 +43,7 @@ directives = {
       u'table (translation required)': 'table',
       u'csv-table (translation required)': 'csv-table',
       u'list-table (translation required)': 'list-table',
+      u'math (translation required)': 'math',
       u'meta (translation required)': 'meta',
       #'imagemap': 'imagemap',
       u'image (translation required)': 'image',   # obrazek
@@ -90,6 +91,7 @@ roles = {
     u'emphasis (translation required)': 'emphasis',
     u'strong (translation required)': 'strong',
     u'literal (translation required)': 'literal',
+    u'math (translation required)': 'math',
     u'named-reference (translation required)': 'named-reference',
     u'anonymous-reference (translation required)': 'anonymous-reference',
     u'footnote-reference (translation required)': 'footnote-reference',

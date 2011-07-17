@@ -1,4 +1,4 @@
-# $Id: nl.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: nl.py 6460 2010-10-29 22:18:44Z milde $
 # Author: Martijn Pieters <mjpieters@users.sourceforge.net>
 # Copyright: This module has been placed in the public domain.
 
@@ -44,6 +44,7 @@ directives = {
       'lijst-tabel': 'list-table',
       #'veelgestelde-vragen': 'questions',
       'meta': 'meta',
+      'math (translation required)': 'math',
       #'imagemap': 'imagemap',
       'beeld': 'image',
       'figuur': 'figure',
@@ -94,6 +95,7 @@ roles = {
     'extra-nadruk': 'strong',
     'vet': 'strong',
     'letterlijk': 'literal',
+    'math (translation required)': 'math',
     'benoemde-referentie': 'named-reference',
     'anonieme-referentie': 'anonymous-reference',
     'voetnoot-referentie': 'footnote-reference',
