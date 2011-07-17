@@ -1,4 +1,4 @@
-# $Id: images.py 5952 2009-05-19 08:45:27Z milde $
+# $Id: images.py 7062 2011-06-30 22:14:29Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -42,6 +42,7 @@ class Image(Directive):
                    'width': directives.length_or_percentage_or_unitless,
                    'scale': directives.percentage,
                    'align': align,
+                   'name': directives.unchanged,
                    'target': directives.unchanged_required,
                    'class': directives.class_option}
 
@@ -85,6 +86,7 @@ class Image(Directive):
             del self.options['target']
         set_classes(self.options)
         image_node = nodes.image(self.block_text, **self.options)
+        self.add_name(image_node)
         if reference_node:
             reference_node += image_node
             return messages + [reference_node]

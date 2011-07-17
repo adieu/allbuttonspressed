@@ -1,4 +1,4 @@
-# $Id: __init__.py 6153 2009-10-05 13:37:10Z milde $
+# $Id: __init__.py 7061 2011-06-29 16:24:09Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -24,9 +24,11 @@ try:
 except ImportError:
     Image = None
 import docutils
-from docutils import frontend, nodes, utils, writers, languages
+from docutils import frontend, nodes, utils, writers, languages, io
 from docutils.transforms import writer_aux
-
+from docutils.math import unimathsymbols2tex, pick_math_environment
+from docutils.math.latex2mathml import parse_latex_math
+from docutils.math.math2html import math2html
 
 class Writer(writers.Writer):
 
@@ -122,6 +124,10 @@ class Writer(writers.Writer):
           'Defined styles: "borderless". Default: ""',
           ['--table-style'],
           {'default': ''}),
+         ('Math output format, one of "MathML", "HTML", "MathJax" '
+          'or "LaTeX". Default: "MathML"',
+          ['--math-output'],
+          {'default': 'MathML'}),
          ('Omit the XML declaration.  Use with caution.',
           ['--no-xml-declaration'],
           {'dest': 'xml_declaration', 'default': 1, 'action': 'store_false',
@@ -228,24 +234,44 @@ class HTMLTranslator(nodes.NodeVisitor):
     doctype = (
         '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"'
         ' "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">\n')
+    doctype_mathml = doctype
+
     head_prefix_template = ('<html xmlns="http://www.w3.org/1999/xhtml"'
-                            ' xml:lang="%s" lang="%s">\n<head>\n')
+                            ' xml:lang="%(lang)s" lang="%(lang)s">\n<head>\n')
     content_type = ('<meta http-equiv="Content-Type"'
                     ' content="text/html; charset=%s" />\n')
+    content_type_mathml = ('<meta http-equiv="Content-Type"'
+                           ' content="application/xhtml+xml; charset=%s" />\n')
+
     generator = ('<meta name="generator" content="Docutils %s: '
                  'http://docutils.sourceforge.net/" />\n')
+    
+    # Template for the MathJax script in the header:
+    mathjax_script = '<script type="text/javascript" src="%s"></script>\n'
+    # The latest version of MathJax from the distributed server:
+    # avaliable to the public under the `MathJax CDN Terms of Service`__
+    # __http://www.mathjax.org/download/mathjax-cdn-terms-of-service/
+    mathjax_url = ('http://cdn.mathjax.org/mathjax/latest/MathJax.js?'
+                   'config=TeX-AMS-MML_HTMLorMML')
+    # TODO: make this configurable:
+    #
+    # a) as extra option or
+    # b) appended to math-output="MathJax"?
+    #
+    # If b), which delimiter/delimter-set (':', ',', ' ')? 
+
     stylesheet_link = '<link rel="stylesheet" href="%s" type="text/css" />\n'
     embedded_stylesheet = '<style type="text/css">\n\n%s\n</style>\n'
     words_and_spaces = re.compile(r'\S+| +|\n')
     sollbruchstelle = re.compile(r'.+\W\W.+|[-?].+', re.U) # wrap point inside word
+    lang_attribute = 'lang' # name changes to 'xml:lang' in XHTML 1.1
 
     def __init__(self, document):
         nodes.NodeVisitor.__init__(self, document)
         self.settings = settings = document.settings
         lcode = settings.language_code
-        self.language = languages.get_language(lcode)
-        self.meta = [self.content_type % settings.output_encoding,
-                     self.generator % docutils.__version__]
+        self.language = languages.get_language(lcode, document.reporter)
+        self.meta = [self.generator % docutils.__version__]
         self.head_prefix = []
         self.html_prolog = []
         if settings.xml_declaration:
@@ -253,9 +279,6 @@ class HTMLTranslator(nodes.NodeVisitor):
                                     % settings.output_encoding)
             # encoding not interpolated:
             self.html_prolog.append(self.xml_declaration)
-        self.head_prefix.extend([self.doctype,
-                                 self.head_prefix_template % (lcode, lcode)])
-        self.html_prolog.append(self.doctype)
         self.head = self.meta[:]
         # stylesheets
         styles = utils.get_stylesheet_list(settings)
@@ -265,8 +288,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         if settings.embed_stylesheet:
             settings.record_dependencies.add(*styles)
             self.stylesheet = [self.embedded_stylesheet %
-                               unicode(open(sheet).read(), 'utf-8')
-                               for sheet in styles]
+                io.FileInput(source_path=sheet, encoding='utf-8').read()
+                for sheet in styles]
         else: # link to stylesheets
             self.stylesheet = [self.stylesheet_link % self.encode(stylesheet)
                                for stylesheet in styles]
@@ -280,6 +303,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body_suffix = ['</body>\n</html>\n']
         self.section_level = 0
         self.initial_header_level = int(settings.initial_header_level)
+        self.math_output = settings.math_output.lower()
         # A heterogenous stack used in conjunction with the tree traversal.
         # Make sure that the pops correspond to the pushes:
         self.context = []
@@ -301,6 +325,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.in_document_title = 0
         self.in_mailto = 0
         self.author_in_authors = None
+        self.math_header = ''
 
     def astext(self):
         return ''.join(self.head_prefix + self.head
@@ -359,9 +384,17 @@ class HTMLTranslator(nodes.NodeVisitor):
             atts[name.lower()] = value
         classes = node.get('classes', [])
         if 'class' in atts:
-            classes.append(atts['class'])
+            classes.append(atts.pop('class'))
+        # move language specification to 'lang' attribute
+        languages = [cls for cls in classes
+                     if cls.startswith('language-')]
+        if languages:
+            # attribute name is 'lang' in XHTML 1.0 but 'xml:lang' in 1.1
+            atts[self.lang_attribute] = languages[0][9:]
+            classes.pop(classes.index(languages[0]))
+        classes = ' '.join(classes).strip()
         if classes:
-            atts['class'] = ' '.join(classes)
+            atts['class'] = classes
         assert 'id' not in atts
         ids.extend(node.get('ids', []))
         if 'ids' in atts:
@@ -706,11 +739,19 @@ class HTMLTranslator(nodes.NodeVisitor):
                          % self.encode(node.get('title', '')))
 
     def depart_document(self, node):
-        self.fragment.extend(self.body)
-        self.body_prefix.append(self.starttag(node, 'div', CLASS='document'))
-        self.body_suffix.insert(0, '</div>\n')
+        self.head_prefix.extend([self.doctype,
+                                 self.head_prefix_template %
+                                 {'lang': self.settings.language_code}])
+        self.html_prolog.append(self.doctype)
+        self.meta.insert(0, self.content_type % self.settings.output_encoding)
+        self.head.insert(0, self.content_type % self.settings.output_encoding)
+        if self.math_header:
+            self.head.append(self.math_header)
         # skip content-type meta tag with interpolated charset value:
         self.html_head.extend(self.head[1:])
+        self.body_prefix.append(self.starttag(node, 'div', CLASS='document'))
+        self.body_suffix.insert(0, '</div>\n')
+        self.fragment.extend(self.body) # self.fragment is the "naked" body
         self.html_body.extend(self.body_prefix[1:] + self.body_pre_docinfo
                               + self.docinfo + self.body
                               + self.body_suffix[:-1])
@@ -836,7 +877,9 @@ class HTMLTranslator(nodes.NodeVisitor):
         if ( self.settings.field_name_limit
              and len(node.astext()) > self.settings.field_name_limit):
             atts['colspan'] = 2
-            self.context.append('</tr>\n<tr><td>&nbsp;</td>')
+            self.context.append('</tr>\n'
+                                + self.starttag(node.parent, 'tr', '')
+                                + '<td>&nbsp;</td>')
         else:
             self.context.append('')
         self.body.append(self.starttag(node, 'th', '', **atts))
@@ -946,16 +989,26 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def visit_image(self, node):
         atts = {}
-        atts['src'] = node['uri']
+        uri = node['uri']
+        # place SVG and SWF images in an <object> element
+        types = {'.svg': 'image/svg+xml',
+                 '.swf': 'application/x-shockwave-flash'}
+        ext = os.path.splitext(uri)[1].lower()
+        if ext in ('.svg', '.swf'):
+            atts['data'] = uri
+            atts['type'] = types[ext]
+        else:
+            atts['src'] = uri
+            atts['alt'] = node.get('alt', uri)
+        # image size
         if 'width' in node:
             atts['width'] = node['width']
         if 'height' in node:
             atts['height'] = node['height']
         if 'scale' in node:
-            if Image and not ('width' in node
-                              and 'height' in node):
+            if Image and not ('width' in node and 'height' in node):
                 try:
-                    im = Image.open(str(atts['src']))
+                    im = Image.open(str(uri))
                 except (IOError, # Source image can't be found or opened
                         UnicodeError):  # PIL doesn't like Unicode paths.
                     pass
@@ -982,7 +1035,6 @@ class HTMLTranslator(nodes.NodeVisitor):
                 del atts[att_name]
         if style:
             atts['style'] = ' '.join(style)
-        atts['alt'] = node.get('alt', atts['src'])
         if (isinstance(node.parent, nodes.TextElement) or
             (isinstance(node.parent, nodes.reference) and
              not isinstance(node.parent.parent, nodes.TextElement))):
@@ -990,22 +1042,15 @@ class HTMLTranslator(nodes.NodeVisitor):
             suffix = ''
         else:
             suffix = '\n'
-        if 'classes' in node and 'align-center' in node['classes']:
-            node['align'] = 'center'
         if 'align' in node:
-            if node['align'] == 'center':
-                # "align" attribute is set in surrounding "div" element.
-                self.body.append('<div align="center" class="align-center">')
-                self.context.append('</div>\n')
-                suffix = ''
-            else:
-                # "align" attribute is set in "img" element.
-                atts['align'] = node['align']
-                self.context.append('')
             atts['class'] = 'align-%s' % node['align']
+        self.context.append('')
+        if ext in ('.svg', '.swf'): # place in an object element,
+            # do NOT use an empty tag: incorrect rendering in browsers
+            self.body.append(self.starttag(node, 'object', suffix, **atts) +
+                             node.get('alt', uri) + '</object>' + suffix)
         else:
-            self.context.append('')
-        self.body.append(self.emptytag(node, 'img', suffix, **atts))
+            self.body.append(self.emptytag(node, 'img', suffix, **atts))
 
     def depart_image(self, node):
         self.body.append(self.context.pop())
@@ -1082,6 +1127,81 @@ class HTMLTranslator(nodes.NodeVisitor):
 
     def depart_literal_block(self, node):
         self.body.append('\n</pre>\n')
+
+    def visit_math(self, node, math_env=''):
+        # As there is no native HTML math support, we provide alternatives:
+        # LaTeX and MathJax math_output modes simply wrap the content,
+        # HTML and MathML math_output modes also convert the math_code.
+        # If the method is called from visit_math_block(), math_env != ''.
+        #
+        # HTML container
+        tags = {# math_output: (block, inline, class-arguments)
+                'mathml':      ('div', '', ''),
+                'html':        ('div', 'span', 'formula'),
+                'mathjax':     ('div', 'span', 'math'),
+                'latex':       ('pre', 'tt',   'math'),
+               }
+        tag = tags[self.math_output][math_env == '']
+        clsarg = tags[self.math_output][2]
+        # LaTeX container
+        wrappers = {# math_mode: (inline, block)
+                    'mathml':  (None,     None),
+                    'html':    ('$%s$',   u'\\begin{%s}\n%s\n\\end{%s}'),
+                    'mathjax': ('\(%s\)', u'\\begin{%s}\n%s\n\\end{%s}'),
+                    'latex':   (None,     None),
+                   }
+        wrapper = wrappers[self.math_output][math_env != '']
+        # get and wrap content
+        math_code = node.astext().translate(unimathsymbols2tex.uni2tex_table)
+        if wrapper and math_env:
+            math_code = wrapper % (math_env, math_code, math_env)
+        elif wrapper:
+            math_code = wrapper % math_code
+        # settings and conversion
+        if self.math_output in ('latex', 'mathjax'):
+            math_code = self.encode(math_code)
+        if self.math_output == 'mathjax':
+            self.math_header = self.mathjax_script % self.mathjax_url
+        elif self.math_output == 'html':
+            math_code = math2html(math_code)
+        elif self.math_output == 'mathml':
+            self.doctype = self.doctype_mathml
+            self.content_type = self.content_type_mathml
+            try:
+                mathml_tree = parse_latex_math(math_code, inline=not(math_env))
+                math_code = ''.join(mathml_tree.xml())
+            except SyntaxError, err:
+                err_node = self.document.reporter.error(err, base_node=node)
+                self.visit_system_message(err_node)
+                self.body.append(self.starttag(node, 'p'))
+                self.body.append(u','.join(err.args))
+                self.body.append('</p>\n')
+                self.body.append(self.starttag(node, 'pre', 
+                                               CLASS='literal-block'))
+                self.body.append(self.encode(math_code))
+                self.body.append('\n</pre>\n')
+                self.depart_system_message(err_node)
+                raise nodes.SkipNode
+        # append to document body
+        if tag:
+            self.body.append(self.starttag(node, tag, CLASS=clsarg))
+        self.body.append(math_code)
+        if math_env:
+            self.body.append('\n')
+        if tag:
+            self.body.append('</%s>\n' % tag)
+        # Content already processed:
+        raise nodes.SkipNode
+
+    def depart_math(self, node):
+        pass # never reached
+
+    def visit_math_block(self, node):
+        math_env = pick_math_environment(node.astext())
+        self.visit_math(node, math_env=math_env)
+
+    def depart_math_block(self, node):
+        pass # never reached
 
     def visit_meta(self, node):
         meta = self.emptytag(node, 'meta', **node.non_default_attributes())

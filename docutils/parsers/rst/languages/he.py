@@ -1,5 +1,5 @@
 # Author: Meir Kriheli
-# Id: $Id: he.py 4837 2006-12-26 09:59:41Z sfcben $
+# Id: $Id: he.py 6460 2010-10-29 22:18:44Z milde $
 # Copyright: This module has been placed in the public domain.
 
 # New language mappings are welcome.  Before doing a new translation, please
@@ -44,6 +44,7 @@ directives = {
       #'qa': 'questions',
       #'faq': 'questions',
       'meta': 'meta',
+      'math (translation required)': 'math',
       #'imagemap': 'imagemap',
       u'\u05ea\u05de\u05d5\u05e0\u05d4': 'image',
       'figure': 'figure',
@@ -90,6 +91,7 @@ roles = {
     'emphasis': 'emphasis',
     'strong': 'strong',
     'literal': 'literal',
+    'math (translation required)': 'math',
     'named-reference': 'named-reference',
     'anonymous-reference': 'anonymous-reference',
     'footnote-reference': 'footnote-reference',

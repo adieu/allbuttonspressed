@@ -1,4 +1,4 @@
-# $Id: __init__.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: __init__.py 6328 2010-05-23 21:20:29Z gbrandl $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -84,7 +84,7 @@ class Writer(html4css1.Writer):
         try:
             subs['pepnum'] = '%04i' % int(self.pepnum)
         except ValueError:
-            subs['pepnum'] = pepnum
+            subs['pepnum'] = self.pepnum
         self.title = header[1][1].astext()
         subs['title'] = self.title
         subs['body'] = ''.join(

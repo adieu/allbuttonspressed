@@ -1,4 +1,4 @@
-# $Id: io.py 6125 2009-09-11 14:24:35Z milde $
+# $Id: io.py 7073 2011-07-07 06:49:19Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -10,14 +10,11 @@ will exist for a variety of input/output mechanisms.
 __docformat__ = 'reStructuredText'
 
 import sys
-try:
-    import locale
-except:
-    pass
 import re
+import codecs
 from docutils import TransformSpec
 from docutils._compat import b
-
+from docutils.error_reporting import locale_encoding, ErrorString, ErrorOutput
 
 class Input(TransformSpec):
 
@@ -87,50 +84,31 @@ class Input(TransformSpec):
                 # Apply heuristics only if no encoding is explicitly given and
                 # no BOM found.  Start with UTF-8, because that only matches
                 # data that *IS* UTF-8:
-                encodings = ['utf-8']
-                try:
-                    # for Python 2.2 compatibility
-                    encodings.append(locale.nl_langinfo(locale.CODESET))
-                except:
-                    pass
-                try:
-                    encodings.append(locale.getlocale()[1])
-                except:
-                    pass
-                try:
-                    encodings.append(locale.getdefaultlocale()[1])
-                except:
-                    pass
-                # fallback encoding:
-                encodings.append('latin-1')
-        error = None
-        error_details = ''
+                encodings = [enc for enc in ('utf-8',
+                                             locale_encoding, # can be None
+                                             'latin-1') # fallback encoding
+                             if enc]
         for enc in encodings:
-            if not enc:
-                continue
             try:
                 decoded = unicode(data, enc, self.error_handler)
                 self.successful_encoding = enc
                 # Return decoded, removing BOMs.
                 return decoded.replace(u'\ufeff', u'')
-            except (UnicodeError, LookupError), tmperror:
-                error = tmperror  # working around Python 3 deleting the
-                                  # error variable after the except clause
-        if error is not None:
-            error_details = '\n(%s: %s)' % (error.__class__.__name__, error)
+            except (UnicodeError, LookupError), err:
+                error = err # in Python 3, the <exception instance> is
+                            # local to the except clause
         raise UnicodeError(
             'Unable to decode input data.  Tried the following encodings: '
-            '%s.%s'
-            % (', '.join([repr(enc) for enc in encodings if enc]),
-               error_details))
+            '%s.\n(%s)' % (', '.join([repr(enc) for enc in encodings]),
+                         ErrorString(error)))
 
     coding_slug = re.compile(b("coding[:=]\s*([-\w.]+)"))
     """Encoding declaration pattern."""
 
-    byte_order_marks = ((b('\xef\xbb\xbf'), 'utf-8'),
-                        (b('\xfe\xff'), 'utf-16-be'),
-                        (b('\xff\xfe'), 'utf-16-le'),)
-    """Sequence of (start_bytes, encoding) tuples to for encoding detection.
+    byte_order_marks = ((codecs.BOM_UTF8, 'utf-8'), # actually 'utf-8-sig'
+                        (codecs.BOM_UTF16_BE, 'utf-16-be'),
+                        (codecs.BOM_UTF16_LE, 'utf-16-le'),)
+    """Sequence of (start_bytes, encoding) tuples for encoding detection.
     The first bytes of input data are checked against the start_bytes strings.
     A match indicates the given encoding."""
 
@@ -204,10 +182,9 @@ class FileInput(Input):
     """
     Input for single, simple file-like objects.
     """
-
     def __init__(self, source=None, source_path=None,
                  encoding=None, error_handler='strict',
-                 autoclose=1, handle_io_errors=1):
+                 autoclose=True, handle_io_errors=True, mode='rU'):
         """
         :Parameters:
             - `source`: either a file-like object (which is read directly), or
@@ -215,29 +192,38 @@ class FileInput(Input):
             - `source_path`: a path to a file, which is opened and then read.
             - `encoding`: the expected text encoding of the input file.
             - `error_handler`: the encoding error handler to use.
-            - `autoclose`: close automatically after read (boolean); always
-              false if `sys.stdin` is the source.
+            - `autoclose`: close automatically after read (except when
+              `sys.stdin` is the source).
             - `handle_io_errors`: summarize I/O errors here, and exit?
+            - `mode`: how the file is to be opened (see standard function
+              `open`). The default 'rU' provides universal newline support
+              for text files.
         """
         Input.__init__(self, source, source_path, encoding, error_handler)
         self.autoclose = autoclose
         self.handle_io_errors = handle_io_errors
+        self._stderr = ErrorOutput()
+
         if source is None:
             if source_path:
+                # Specify encoding in Python 3
+                if sys.version_info >= (3,0):
+                    kwargs = {'encoding': self.encoding,
+                              'errors': self.error_handler}
+                else:
+                    kwargs = {}
+
                 try:
-                    self.source = open(source_path, 'rb')
+                    self.source = open(source_path, mode, **kwargs)
                 except IOError, error:
                     if not handle_io_errors:
                         raise
-                    print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
-                                                    error)
-                    print >>sys.stderr, ('Unable to open source file for '
-                                         "reading ('%s').  Exiting." %
-                                         source_path)
+                    print >>self._stderr, ErrorString(error)
+                    print >>self._stderr, (u'Unable to open source'
+                        u" file for reading ('%s'). Exiting." % source_path)
                     sys.exit(1)
             else:
                 self.source = sys.stdin
-                self.autoclose = None
         if not source_path:
             try:
                 self.source_path = self.source.name
@@ -267,7 +253,8 @@ class FileInput(Input):
         return [self.decode(line) for line in lines]
 
     def close(self):
-        self.source.close()
+        if self.source is not sys.stdin:
+            self.source.close()
 
 
 class FileOutput(Output):
@@ -277,8 +264,8 @@ class FileOutput(Output):
     """
 
     def __init__(self, destination=None, destination_path=None,
-                 encoding=None, error_handler='strict', autoclose=1,
-                 handle_io_errors=1):
+                 encoding=None, error_handler='strict', autoclose=True,
+                 handle_io_errors=True):
         """
         :Parameters:
             - `destination`: either a file-like object (which is written
@@ -286,20 +273,20 @@ class FileOutput(Output):
               `destination_path` given).
             - `destination_path`: a path to a file, which is opened and then
               written.
-            - `autoclose`: close automatically after write (boolean); always
-              false if `sys.stdout` is the destination.
+            - `autoclose`: close automatically after write (except when
+              `sys.stdout` or `sys.stderr` is the destination).
         """
         Output.__init__(self, destination, destination_path,
                         encoding, error_handler)
-        self.opened = 1
+        self.opened = True
         self.autoclose = autoclose
         self.handle_io_errors = handle_io_errors
+        self._stderr = ErrorOutput()
         if destination is None:
             if destination_path:
-                self.opened = None
+                self.opened = False
             else:
                 self.destination = sys.stdout
-                self.autoclose = None
         if not destination_path:
             try:
                 self.destination_path = self.destination.name
@@ -307,21 +294,35 @@ class FileOutput(Output):
                 pass
 
     def open(self):
+        # Specify encoding in Python 3.
+        # (Do not use binary mode ('wb') as this prevents the
+        # conversion of newlines to the system specific default.)
+        if sys.version_info >= (3,0):
+            kwargs = {'encoding': self.encoding,
+                      'errors': self.error_handler}
+        else:
+            kwargs = {}
+
         try:
-            self.destination = open(self.destination_path, 'w')
+            self.destination = open(self.destination_path, 'w', **kwargs)
         except IOError, error:
             if not self.handle_io_errors:
                 raise
-            print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
-                                            error)
-            print >>sys.stderr, ('Unable to open destination file for writing'
-                                 " ('%s').  Exiting." % self.destination_path)
+            print >>self._stderr, ErrorString(error)
+            print >>self._stderr, (u'Unable to open destination file'
+                u" for writing ('%s').  Exiting." % self.destination_path)
             sys.exit(1)
-        self.opened = 1
+        self.opened = True
 
     def write(self, data):
-        """Encode `data`, write it to a single file, and return it."""
-        output = self.encode(data)
+        """Encode `data`, write it to a single file, and return it.
+
+        In Python 3, a (unicode) string is returned.
+        """
+        if sys.version_info >= (3,0):
+            output = data # in py3k, write expects a (Unicode) string
+        else:
+            output = self.encode(data)
         if not self.opened:
             self.open()
         try:
@@ -332,8 +333,9 @@ class FileOutput(Output):
         return output
 
     def close(self):
-        self.destination.close()
-        self.opened = None
+        if self.destination not in (sys.stdout, sys.stderr):
+            self.destination.close()
+            self.opened = False
 
 
 class BinaryFileOutput(FileOutput):
@@ -346,12 +348,11 @@ class BinaryFileOutput(FileOutput):
         except IOError, error:
             if not self.handle_io_errors:
                 raise
-            print >>sys.stderr, '%s: %s' % (error.__class__.__name__,
-                                            error)
-            print >>sys.stderr, ('Unable to open destination file for writing '
-                                 "('%s').  Exiting." % self.destination_path)
+            print >>self._stderr, ErrorString(error)
+            print >>self._stderr, (u'Unable to open destination file'
+                u" for writing ('%s').  Exiting." % self.destination_path)
             sys.exit(1)
-        self.opened = 1
+        self.opened = True
 
 
 class StringInput(Input):

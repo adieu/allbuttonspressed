@@ -1,4 +1,4 @@
-# $Id: __init__.py 5889 2009-04-01 20:00:21Z gbrandl $
+# $Id: __init__.py 7025 2011-05-05 23:19:51Z milde $
 # Authors: Chris Liechti <cliechti@gmx.net>;
 #          David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
@@ -279,6 +279,13 @@ class S5HTMLTranslator(html4css1.HTMLTranslator):
             return 1
 
     def depart_document(self, node):
+        self.head_prefix.extend([self.doctype,
+                                 self.head_prefix_template %
+                                 {'lang': self.settings.language_code}])
+        self.html_prolog.append(self.doctype)
+        self.meta.insert(0, self.content_type % self.settings.output_encoding)
+        self.head.insert(0, self.content_type % self.settings.output_encoding)
+
         header = ''.join(self.s5_header)
         footer = ''.join(self.s5_footer)
         title = ''.join(self.html_title).replace('<h1 class="title">', '<h1>')

@@ -1,4 +1,4 @@
-# $Id: eo.py 4564 2006-05-21 20:44:42Z wiemann $
+# $Id: eo.py 6460 2010-10-29 22:18:44Z milde $
 # Author: Marcelo Huerta San Martin <richieadler@users.sourceforge.net>
 # Copyright: This module has been placed in the public domain.
 
@@ -50,6 +50,7 @@ directives = {
       u'tabelo-csv': 'csv-table',
       u'tabelo-lista': 'list-table',
       u'meta': 'meta',
+      'math (translation required)': 'math',
       #'imagemap': 'imagemap',
       u'bildo': 'image',
       u'figuro': 'figure',
@@ -97,6 +98,7 @@ roles = {
     u'emfazo': 'emphasis',
     u'forta': 'strong',
     u'litera': 'literal',
+    'math (translation required)': 'math',
     u'nomita-referenco': 'named-reference',
     u'nenomita-referenco': 'anonymous-reference',
     u'piednota-referenco': 'footnote-reference',

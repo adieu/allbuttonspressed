@@ -1,4 +1,4 @@
-# $Id: misc.py 6142 2009-09-25 18:51:01Z milde $
+# $Id: misc.py 7072 2011-07-06 15:52:30Z milde $
 # Authors: David Goodger <goodger@python.org>; Dethe Elza
 # Copyright: This module has been placed in the public domain.
 
@@ -11,6 +11,7 @@ import os.path
 import re
 import time
 from docutils import io, nodes, statemachine, utils
+from docutils.error_reporting import SafeString, ErrorString
 from docutils.parsers.rst import Directive, convert_directive_function
 from docutils.parsers.rst import directives, roles, states
 from docutils.transforms import misc
@@ -66,57 +67,49 @@ class Include(Directive):
                                input_encoding_error_handler),
                 handle_io_errors=None)
         except IOError, error:
-            raise self.severe('Problems with "%s" directive path:\n%s: %s.' %
-                        (self.name, error.__class__.__name__, str(error)))
-            # Hack: Since Python 2.6, the string interpolation returns a
-            # unicode object if one of the supplied %s replacements is a
-            # unicode object. IOError has no `__unicode__` method and the
-            # fallback `__repr__` does not report the file name. Explicitely
-            # converting to str fixes this for now::
-            #   print '%s\n%s\n%s\n' %(error, str(error), repr(error))
+            raise self.severe(u'Problems with "%s" directive path:\n%s.' %
+                      (self.name, ErrorString(error)))
         startline = self.options.get('start-line', None)
         endline = self.options.get('end-line', None)
         try:
             if startline or (endline is not None):
-                include_lines = include_file.readlines()
-                include_text = ''.join(include_lines[startline:endline])
+                lines = include_file.readlines()
+                rawtext = ''.join(lines[startline:endline])
             else:
-                include_text = include_file.read()
+                rawtext = include_file.read()
         except UnicodeError, error:
-            raise self.severe(
-                'Problem with "%s" directive:\n%s: %s'
-                % (self.name, error.__class__.__name__, error))
+            raise self.severe(u'Problem with "%s" directive:\n%s' %
+                              (self.name, ErrorString(error)))
         # start-after/end-before: no restrictions on newlines in match-text,
         # and no restrictions on matching inside lines vs. line boundaries
         after_text = self.options.get('start-after', None)
         if after_text:
-            # skip content in include_text before *and incl.* a matching text
-            after_index = include_text.find(after_text)
+            # skip content in rawtext before *and incl.* a matching text
+            after_index = rawtext.find(after_text)
             if after_index < 0:
                 raise self.severe('Problem with "start-after" option of "%s" '
                                   'directive:\nText not found.' % self.name)
-            include_text = include_text[after_index + len(after_text):]
+            rawtext = rawtext[after_index + len(after_text):]
         before_text = self.options.get('end-before', None)
         if before_text:
-            # skip content in include_text after *and incl.* a matching text
-            before_index = include_text.find(before_text)
+            # skip content in rawtext after *and incl.* a matching text
+            before_index = rawtext.find(before_text)
             if before_index < 0:
                 raise self.severe('Problem with "end-before" option of "%s" '
                                   'directive:\nText not found.' % self.name)
-            include_text = include_text[:before_index]
+            rawtext = rawtext[:before_index]
         if 'literal' in self.options:
             # Convert tabs to spaces, if `tab_width` is positive.
             if tab_width >= 0:
-                text = include_text.expandtabs(tab_width)
+                text = rawtext.expandtabs(tab_width)
             else:
-                text = include_text
-            literal_block = nodes.literal_block(include_text, text, 
-                                                source=path)
+                text = rawtext
+            literal_block = nodes.literal_block(rawtext, text, source=path)
             literal_block.line = 1
             return [literal_block]
         else:
             include_lines = statemachine.string2lines(
-                include_text, tab_width, convert_whitespace=1)
+                rawtext, tab_width, convert_whitespace=1)
             self.state_machine.insert_input(include_lines, path)
             return []
 
@@ -173,14 +166,13 @@ class Raw(Directive):
                                    input_encoding_error_handler),
                     handle_io_errors=None)
             except IOError, error:
-                raise self.severe('Problems with "%s" directive path:\n%s.'
-                                  % (self.name, error))
+                raise self.severe(u'Problems with "%s" directive path:\n%s.'
+                                  % (self.name, ErrorString(error)))
             try:
                 text = raw_file.read()
             except UnicodeError, error:
-                raise self.severe(
-                    'Problem with "%s" directive:\n%s: %s'
-                    % (self.name, error.__class__.__name__, error))
+                raise self.severe(u'Problem with "%s" directive:\n%s'
+                    % (self.name, ErrorString(error)))
             attributes['source'] = path
         elif 'url' in self.options:
             source = self.options['url']
@@ -191,9 +183,8 @@ class Raw(Directive):
             try:
                 raw_text = urllib2.urlopen(source).read()
             except (urllib2.URLError, IOError, OSError), error:
-                raise self.severe(
-                    'Problems with "%s" directive URL "%s":\n%s.'
-                    % (self.name, self.options['url'], error))
+                raise self.severe(u'Problems with "%s" directive URL "%s":\n%s.'
+                    % (self.name, self.options['url'], ErrorString(error)))
             raw_file = io.StringInput(
                 source=raw_text, source_path=source, encoding=encoding,
                 error_handler=(self.state.document.settings.\
@@ -201,9 +192,8 @@ class Raw(Directive):
             try:
                 text = raw_file.read()
             except UnicodeError, error:
-                raise self.severe(
-                    'Problem with "%s" directive:\n%s: %s'
-                    % (self.name, error.__class__.__name__, error))
+                raise self.severe(u'Problem with "%s" directive:\n%s'
+                                  % (self.name, ErrorString(error)))
             attributes['source'] = source
         else:
             # This will always fail because there is no content.
@@ -226,21 +216,23 @@ class Replace(Directive):
         element = nodes.Element(text)
         self.state.nested_parse(self.content, self.content_offset,
                                 element)
-        if ( len(element) != 1
-             or not isinstance(element[0], nodes.paragraph)):
-            messages = []
-            for node in element:
-                if isinstance(node, nodes.system_message):
-                    node['backrefs'] = []
-                    messages.append(node)
-            error = self.state_machine.reporter.error(
-                'Error in "%s" directive: may contain a single paragraph '
-                'only.' % (self.name), line=self.lineno)
-            messages.append(error)
-            return messages
-        else:
-            return element[0].children
-
+        # element might contain [paragraph] + system_message(s)
+        node = None
+        messages = []
+        for elem in element:
+            if not node and isinstance(elem, nodes.paragraph):
+                node = elem
+            elif isinstance(elem, nodes.system_message):
+                elem['backrefs'] = []
+                messages.append(elem)
+            else:
+                return [
+                    self.state_machine.reporter.error(
+                        'Error in "%s" directive: may contain a single paragraph '
+                        'only.' % (self.name), line=self.lineno) ]
+        if node:
+            return messages + node.children
+        return messages
 
 class Unicode(Directive):
 
@@ -279,10 +271,9 @@ class Unicode(Directive):
         for code in codes:
             try:
                 decoded = directives.unicode_code(code)
-            except ValueError, err:
-                raise self.error(
-                    'Invalid character code: %s\n%s: %s'
-                    % (code, err.__class__.__name__, err))
+            except ValueError, error:
+                raise self.error(u'Invalid character code: %s\n%s'
+                    % (code, ErrorString(error)))
             element += nodes.Text(decoded)
         return element.children
 
@@ -377,8 +368,8 @@ class Role(Directive):
                 options['class'] = directives.class_option(new_role_name)
             except ValueError, detail:
                 error = self.state_machine.reporter.error(
-                    'Invalid argument for "%s" directive:\n%s.'
-                    % (self.name, detail), nodes.literal_block(
+                    u'Invalid argument for "%s" directive:\n%s.'
+                    % (self.name, SafeString(detail)), nodes.literal_block(
                     self.block_text, self.block_text), line=self.lineno)
                 return messages + [error]
         role = roles.CustomRole(new_role_name, base_role, options, content)
@@ -390,7 +381,6 @@ class DefaultRole(Directive):
 
     """Set the default interpreted text role."""
 
-    required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = False
 
@@ -443,7 +433,6 @@ class TestDirective(Directive):
 
     """This directive is useful only for testing purposes."""
 
-    required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = True
     option_spec = {'option': directives.unchanged_required}

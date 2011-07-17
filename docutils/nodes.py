@@ -1,4 +1,4 @@
-# $Id: nodes.py 6011 2009-07-09 10:00:07Z gbrandl $
+# $Id: nodes.py 7054 2011-06-07 15:05:58Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -335,17 +335,14 @@ class Text(Node, reprunicode):
         self.rawsource = rawsource
         """The raw text from which this element was constructed."""
 
-    def __repr__(self):
-        data = reprunicode.__repr__(self)
-        if len(data) > 70:
-            data = reprunicode.__repr__(self[:64] + ' ...')
-        return '<%s: %s>' % (self.tagname, data)
+    def shortrepr(self, maxlen=18):
+        data = self
+        if len(data) > maxlen:
+            data = data[:maxlen-4] + ' ...'
+        return '<%s: %s>' % (self.tagname, repr(reprunicode(data)))
 
-    def shortrepr(self):
-        data = reprunicode.__repr__(self)
-        if len(data) > 20:
-            data = reprunicode.__repr__(self[:16] + ' ...')
-        return '<%s: %s>' % (self.tagname, data)
+    def __repr__(self):
+        return self.shortrepr(maxlen=68)
 
     def _dom_node(self, domroot):
         return domroot.createTextNode(unicode(self))
@@ -464,7 +461,7 @@ class Element(Node):
         element = domroot.createElement(self.tagname)
         for attribute, value in self.attlist():
             if isinstance(value, list):
-                value = ' '.join([serial_escape('%s' % v) for v in value])
+                value = ' '.join([serial_escape('%s' % (v,)) for v in value])
             element.setAttribute(attribute, '%s' % value)
         for child in self.children:
             element.appendChild(child._dom_node(domroot))
@@ -508,7 +505,7 @@ class Element(Node):
             if value is None:           # boolean attribute
                 parts.append(name)
             elif isinstance(value, list):
-                values = [serial_escape('%s' % v) for v in value]
+                values = [serial_escape('%s' % (v,)) for v in value]
                 parts.append('%s="%s"' % (name, ' '.join(values)))
             else:
                 parts.append('%s="%s"' % (name, value))
@@ -742,7 +739,7 @@ class Element(Node):
                         for child in self.children])
 
     def copy(self):
-        return self.__class__(**self.attributes)
+        return self.__class__(rawsource=self.rawsource, **self.attributes)
 
     def deepcopy(self):
         copy = self.copy()
@@ -1344,6 +1341,7 @@ class option_string(Part, TextElement): pass
 class description(Part, Element): pass
 class literal_block(General, FixedTextElement): pass
 class doctest_block(General, FixedTextElement): pass
+class math_block(General, FixedTextElement): pass
 class line_block(General, Element): pass
 
 
@@ -1501,6 +1499,7 @@ class abbreviation(Inline, TextElement): pass
 class acronym(Inline, TextElement): pass
 class superscript(Inline, TextElement): pass
 class subscript(Inline, TextElement): pass
+class math(Inline, TextElement): pass
 
 
 class image(General, Inline, Element):
@@ -1534,6 +1533,7 @@ node_class_names = """
     header hint
     image important inline
     label legend line line_block list_item literal literal_block
+    math math_block
     note
     option option_argument option_group option_list option_list_item
         option_string organization
@@ -1840,9 +1840,10 @@ def make_id(string):
         id = id.decode()
     id = id.translate(_non_id_translate_digraphs)
     id = id.translate(_non_id_translate)
-    # get rid of non-ascii characters
+    # get rid of non-ascii characters.
+    # 'ascii' lowercase to prevent problems with turkish locale.
     id = unicodedata.normalize('NFKD', id).\
-         encode('ASCII', 'ignore').decode('ASCII')
+         encode('ascii', 'ignore').decode('ascii')
     # shrink runs of whitespace and replace by hyphen
     id = _non_id_chars.sub('-', ' '.join(id.split()))
     id = _non_id_at_ends.sub('', id)

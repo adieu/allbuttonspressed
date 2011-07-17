@@ -1,4 +1,4 @@
-# $Id: statemachine.py 5968 2009-06-02 14:44:19Z milde $
+ # $Id: statemachine.py 7037 2011-05-19 08:56:27Z milde $
 # Author: David Goodger <goodger@python.org>
 # Copyright: This module has been placed in the public domain.
 
@@ -110,7 +110,7 @@ import sys
 import re
 import types
 import unicodedata
-
+from docutils.error_reporting import ErrorOutput
 
 class StateMachine:
 
@@ -169,6 +169,10 @@ class StateMachine:
         line changes.  Observers are called with one argument, ``self``.
         Cleared at the end of `run()`."""
 
+        self._stderr = ErrorOutput()
+        """Wrapper around sys.stderr catching en-/decoding errors"""
+
+
     def unlink(self):
         """Remove circular references to objects no longer required."""
         for state in self.states.values():
@@ -207,15 +211,15 @@ class StateMachine:
         self.line_offset = -1
         self.current_state = initial_state or self.initial_state
         if self.debug:
-            print >>sys.stderr, (
-                '\nStateMachine.run: input_lines (line_offset=%s):\n| %s'
-                % (self.line_offset, '\n| '.join(self.input_lines)))
+            print >>self._stderr, (
+                u'\nStateMachine.run: input_lines (line_offset=%s):\n| %s'
+                % (self.line_offset, u'\n| '.join(self.input_lines)))
         transitions = None
         results = []
         state = self.get_state()
         try:
             if self.debug:
-                print >>sys.stderr, ('\nStateMachine.run: bof transition')
+                print >>self._stderr, '\nStateMachine.run: bof transition'
             context, result = state.bof(context)
             results.extend(result)
             while 1:
@@ -225,15 +229,15 @@ class StateMachine:
                         if self.debug:
                             source, offset = self.input_lines.info(
                                 self.line_offset)
-                            print >>sys.stderr, (
-                                '\nStateMachine.run: line (source=%r, '
-                                'offset=%r):\n| %s'
+                            print >>self._stderr, (
+                                u'\nStateMachine.run: line (source=%r, '
+                                u'offset=%r):\n| %s'
                                 % (source, offset, self.line))
                         context, next_state, result = self.check_line(
                             context, state, transitions)
                     except EOFError:
                         if self.debug:
-                            print >>sys.stderr, (
+                            print >>self._stderr, (
                                 '\nStateMachine.run: %s.eof transition'
                                 % state.__class__.__name__)
                         result = state.eof(context)
@@ -245,7 +249,7 @@ class StateMachine:
                     self.previous_line() # back up for another try
                     transitions = (exception.args[0],)
                     if self.debug:
-                        print >>sys.stderr, (
+                        print >>self._stderr, (
                               '\nStateMachine.run: TransitionCorrection to '
                               'state "%s", transition %s.'
                               % (state.__class__.__name__, transitions[0]))
@@ -258,7 +262,7 @@ class StateMachine:
                     else:
                         transitions = (exception.args[1],)
                     if self.debug:
-                        print >>sys.stderr, (
+                        print >>self._stderr, (
                               '\nStateMachine.run: StateCorrection to state '
                               '"%s", transition %s.'
                               % (next_state, transitions[0]))
@@ -282,11 +286,11 @@ class StateMachine:
         """
         if next_state:
             if self.debug and next_state != self.current_state:
-                print >>sys.stderr, \
-                      ('\nStateMachine.get_state: Changing state from '
-                       '"%s" to "%s" (input line %s).'
-                       % (self.current_state, next_state,
-                          self.abs_line_number()))
+                print >>self._stderr, (
+                    '\nStateMachine.get_state: Changing state from '
+                    '"%s" to "%s" (input line %s).'
+                    % (self.current_state, next_state,
+                       self.abs_line_number()))
             self.current_state = next_state
         try:
             return self.states[self.current_state]
@@ -356,11 +360,44 @@ class StateMachine:
         """Return line number of current line (counting from 1)."""
         return self.line_offset + self.input_offset + 1
 
+    def get_source_and_line(self, lineno=None):
+        """Return (source, line) tuple for current or given line number.
+
+        Looks up the source and line number in the `self.input_lines`
+        StringList instance to count for included source files.
+
+        If the optional argument `lineno` is given, convert it from an
+        absolute line number to the corresponding (source, line) pair.
+        """
+        if lineno is None:
+            offset = self.line_offset
+        else:
+            offset = lineno - self.input_offset - 1
+        try:
+            src, srcoffset = self.input_lines.info(offset)
+            srcline = srcoffset + 1
+        except (TypeError):
+            # line is None if index is "Just past the end"
+            src, srcline = self.get_source_and_line(offset + self.input_offset)
+            return src, srcline + 1
+        except (IndexError): # `offset` is off the list
+            src, srcline = None, None
+            # raise AssertionError('cannot find line %d in %s lines' %
+            #                      (offset, len(self.input_lines)))
+            #                      # list(self.input_lines.lines())))
+        # assert offset == srcoffset, str(self.input_lines)
+        # print "get_source_and_line(%s):" % lineno,
+        # print offset + 1, '->', src, srcline
+        # print self.input_lines
+        return (src, srcline)
+
     def insert_input(self, input_lines, source):
         self.input_lines.insert(self.line_offset + 1, '',
-                                source='internal padding')
+                                source='internal padding after '+source,
+                                offset=len(input_lines))
         self.input_lines.insert(self.line_offset + 1, '',
-                                source='internal padding')
+                                source='internal padding before '+source,
+                                offset=-1)
         self.input_lines.insert(self.line_offset + 2,
                                 StringList(input_lines, source))
 
@@ -406,7 +443,7 @@ class StateMachine:
             transitions =  state.transition_order
         state_correction = None
         if self.debug:
-            print >>sys.stderr, (
+            print >>self._stderr, (
                   '\nStateMachine.check_line: state="%s", transitions=%r.'
                   % (state.__class__.__name__, transitions))
         for name in transitions:
@@ -414,14 +451,14 @@ class StateMachine:
             match = pattern.match(self.line)
             if match:
                 if self.debug:
-                    print >>sys.stderr, (
+                    print >>self._stderr, (
                           '\nStateMachine.check_line: Matched transition '
                           '"%s" in state "%s".'
                           % (name, state.__class__.__name__))
                 return method(match, context, next_state)
         else:
             if self.debug:
-                print >>sys.stderr, (
+                print >>self._stderr, (
                       '\nStateMachine.check_line: No match in state "%s".'
                       % state.__class__.__name__)
             return state.no_match(context, transitions)
@@ -455,10 +492,10 @@ class StateMachine:
     def error(self):
         """Report error details."""
         type, value, module, line, function = _exception_data()
-        print >>sys.stderr, '%s: %s' % (type, value)
-        print >>sys.stderr, 'input line %s' % (self.abs_line_number())
-        print >>sys.stderr, ('module %s, line %s, function %s'
-                             % (module, line, function))
+        print >>self._stderr, u'%s: %s' % (type, value)
+        print >>self._stderr, 'input line %s' % (self.abs_line_number())
+        print >>self._stderr, (u'module %s, line %s, function %s' %
+                               (module, line, function))
 
     def attach_observer(self, observer):
         """
@@ -757,7 +794,7 @@ class StateMachineWS(StateMachine):
     `StateMachine` subclass specialized for whitespace recognition.
 
     There are three methods provided for extracting indented text blocks:
-    
+
     - `get_indented()`: use when the indent is unknown.
     - `get_known_indented()`: use when the indent is known for all lines.
     - `get_first_known_indented()`: use when only the first line's indent is
@@ -1046,7 +1083,7 @@ class ViewList:
     child and parent lists can be broken by calling `disconnect()` on the
     child list.
 
-    Also, ViewList objects keep track of the source & offset of each item. 
+    Also, ViewList objects keep track of the source & offset of each item.
     This information is accessible via the `source()`, `offset()`, and
     `info()` methods.
     """
@@ -1103,9 +1140,8 @@ class ViewList:
     def __len__(self): return len(self.data)
 
     # The __getitem__()/__setitem__() methods check whether the index
-    # is a slice first, since native list objects start supporting
-    # them directly in Python 2.3 (no exception is raised when
-    # indexing a list with a slice object; they just work).
+    # is a slice first, since indexing a native list with a slice object
+    # just works.
 
     def __getitem__(self, i):
         if isinstance(i, types.SliceType):
@@ -1285,6 +1321,16 @@ class ViewList:
     def disconnect(self):
         """Break link between this list and parent list."""
         self.parent = None
+
+    def xitems(self):
+        """Return iterator yielding (source, offset, value) tuples."""
+        for (value, (source, offset)) in zip(self.data, self.items):
+            yield (source, offset, value)
+
+    def pprint(self):
+        """Print the list in `grep` format (`source:offset:value` lines)"""
+        for line in self.xitems():
+            print "%s:%d:%s" % line
 
 
 class StringList(ViewList):
