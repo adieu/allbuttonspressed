@@ -37,6 +37,17 @@ def migrate_v4():
         page.published = True
         page.save()
 
+def migrate_v5():
+    # Updated docutils and Pygments and switched to HTML writer that uses
+    # <code> instead of <tt> tags (the latter are invalid in HTML5)
+    resave_content()
+
+def resave_content():
+    for post in Post.objects.all():
+        post.save()
+    for page in Page.objects.all():
+        post.save()
+
 class DjangoRedirect(models.Model):
     __module__ = 'redirects.models'
 
