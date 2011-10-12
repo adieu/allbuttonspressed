@@ -31,4 +31,4 @@ handlers:
   expiration: '365d'
 
 - url: /.*
-  script: djangoappengine.main.main.application
+  script: djangoappengine.main.application
