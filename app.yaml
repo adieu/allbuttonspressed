@@ -16,7 +16,7 @@ handlers:
   login: admin
 
 - url: /_ah/stats/.*
-  script: djangoappengine.appstats.ui.application
+  script: djangoappengine.appstats.application
 
 - url: /blank.html
   static_files: blank.html
