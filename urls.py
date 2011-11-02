@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls.defaults import *
 from blog.models import PostsSitemap
 from minicms.models import PagesSitemap
@@ -10,7 +11,6 @@ sitemaps = {
 }
 
 urlpatterns = patterns('',
-    ('^_ah/warmup$', 'djangoappengine.views.warmup'),
     (r'^admin/', include('urlsadmin')),
     (r'^blog/', include('blog.urls')),
     (r'^sitemap\.xml$', 'django.contrib.sitemaps.views.sitemap',
@@ -18,3 +18,8 @@ urlpatterns = patterns('',
     (r'^search$', 'google_cse.views.search'),
     (r'^robots\.txt$', 'robots.views.robots'),
 )
+
+if 'djangoappengine' in settings.INSTALLED_APPS:
+    urlpatterns = patterns('',
+        ('^_ah/warmup$', 'djangoappengine.views.warmup'),
+    ) + urlpatterns
