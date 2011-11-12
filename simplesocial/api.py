@@ -4,7 +4,7 @@ from django.utils.http import urlquote
 from mediagenerator.utils import media_url
 
 WIDE_TWITTER_BUTTON = """
-<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(title)s&amp;url=%(url)s%(opttwitteruser)s" style="width: 135px; height: 20px; border: none; overflow: hidden;"></iframe>
+<iframe src="http://platform.twitter.com/widgets/tweet_button.html?count=horizontal&amp;lang=en&amp;text=%(title)s&amp;url=%(url)s%(opttwitteruser)s" scrolling="no" frameborder="0" allowtransparency="true" style="width: 135px; height: 20px; border: none; overflow: hidden;"></iframe>
 """
 
 FACEBOOK_LIKE_BUTTON = """
